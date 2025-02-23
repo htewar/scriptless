@@ -7,7 +7,7 @@ import { apiClient } from "@/app/lib/api/apiClient";
 import { TestCase } from "@/app/lib/models/TestCase";
 import HistoryTestCaseItemView from "@/app/lib/ui/components/historyTestCaseItemView";
 
-export default function () {
+export default function History() {
     const [isLoading, setLoading] = useState(false);
     const [testCases, setTestCases] = useState<TestCase[]>([])
 

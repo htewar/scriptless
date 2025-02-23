@@ -62,7 +62,7 @@ export default function LoginForm({ onSubmitForm, isLoading, errorMessage, onFor
                                             <FormItem>
                                                 <FormLabel>Username</FormLabel>
                                                 <FormControl>
-                                                    <Input disabled={isLoading} type="string" {...field} onChangeCapture={value => onFormDataUpdate()} />
+                                                    <Input disabled={isLoading} type="string" {...field} onChangeCapture={ () => onFormDataUpdate()} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

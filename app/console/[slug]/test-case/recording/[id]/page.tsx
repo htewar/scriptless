@@ -7,13 +7,12 @@ import { SyncLoader } from 'react-spinners';
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
-import { Route } from 'lucide-react';
 import { RoutePaths } from '@/app/lib/utils/routes';
 
 export default function Recording() {
     const router = useRouter();
     const { slug, id } = useParams();
-    const [isLoading, setIsLoading] = useState<Boolean>(true)
+    const [isLoading, setIsLoading] = useState<boolean>(true)
 
     useEffect(() => {
         if (id) {

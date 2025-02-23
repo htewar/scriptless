@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     const authToken = Cookies.get('authToken');
     if (authToken) {
-      router.replace(RoutePaths.TestCase);
+      router.replace(RoutePaths.TestCases(""));
     }
   }, [router]);
 
@@ -24,8 +24,6 @@ export default function Home() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      const expirationDate = new Date(new Date().getTime() + 15 * 60 * 1000);
-      // Cookies.set('authToken', 'authTokenValue', { expires: expirationDate });
       router.replace(RoutePaths.Console);
     }, 1000);
     // if (values.username === "admin" && values.password === "admin") {

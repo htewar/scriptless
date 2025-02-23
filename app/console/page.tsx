@@ -1,10 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Route } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Strings } from "../lib/utils/strings";
 import { RoutePaths } from "../lib/utils/routes";
+import Image from "next/image";
 
 const ConsolePlatforms = [
     {
@@ -40,7 +41,7 @@ export default function Home() {
                         <div key={platform.slug} className="bg-white rounded-lg p-4 border border-black">
                             <div className="flex">
                                 <p className="text-3xl font-medium">{platform.name}</p>
-                                <img src={platform.icon} alt={platform.name} className={platform.iconSize} />
+                                <Image src={platform.icon} alt={platform.name} className={platform.iconSize} />
                             </div>
                             <Button
                                 variant="outline"

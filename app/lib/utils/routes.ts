@@ -1,5 +1,3 @@
-import { Trigger } from "@radix-ui/react-select";
-
 const Console = "/console";
 const TestCase = "/test-case";
 

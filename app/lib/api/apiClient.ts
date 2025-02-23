@@ -1,5 +1,4 @@
 import { TestCase } from "../models/TestCase";
-import { Platform } from "../models/Platform";
 import { delay } from "../utils/delay";
 
 class ApiClient {
@@ -14,11 +13,6 @@ class ApiClient {
     }
 
     async getTestCases(): Promise<TestCase[]> {
-        // return [
-        //     new TestCase(1, Platform.iOS, 'Driver Go Online'),
-        //     new TestCase(1, Platform.iOS, 'Driver Go Offline'),
-        //     new TestCase(1, Platform.Android, 'Driver Go Online'),
-        // ]
         const response = await fetch(`http://localhost:3000/api/test-case`);
         return response.json();
     }

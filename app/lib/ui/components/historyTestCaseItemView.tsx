@@ -2,8 +2,6 @@
 
 import Image from 'next/image';
 import { Platform } from '../../models/Platform';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
 
 interface HistoryTestCaseItemViewProps {
     platform: Platform,
@@ -13,7 +11,6 @@ interface HistoryTestCaseItemViewProps {
 export default function HistoryTestCaseItemView(
     itemProps: HistoryTestCaseItemViewProps
 ) {
-    const { slug } = useParams();
     return (
         <div className="px-6 w-full">
             <div className='flex w-full items-center justify-between border rounded-lg px-4 border-black/30 py-2'>
