@@ -115,6 +115,27 @@ class ApiClient {
             ));
         }
     }
+
+    async uploadBuild(formData: FormData): Promise<void> {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/builds`, {
+            method: 'POST',
+            body: formData,
+        });
+        console.log("Build upload response :: ", response)
+        if (!response.ok) {
+            throw new Error('Failed to upload build');
+        }
+    }
+
+    async deleteBuild(uid: string, buildName: string): Promise<void> {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/builds/?uid=${uid}&build=${buildName}`, {
+            method: 'DELETE',
+        });
+        console.log("Delete Response :: ", response)
+        if (!response.ok) {
+            throw new Error('Failed to delete build');
+        }
+    }
 }
 
-export const apiClient = new ApiClient('http://localhost:3000', "v1");
+export const apiClient = new ApiClient('http://172.23.193.145:3000/', "v1");

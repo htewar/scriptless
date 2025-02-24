@@ -180,10 +180,12 @@ export default function AddNewTestCaseScreen() {
                                                     <SelectItem key={build.id} value={`${build.name}${build.ext}`}>
                                                         {(build.type === "android") ? (
                                                             <Image src="/android-logo.svg" alt="Android"
-                                                                   className="w-4 h-4 inline-block mr-1"/>
+                                                                   className="w-4 h-4 inline-block mr-1" width={20}
+                                                                   height={20}/>
                                                         ) : (
                                                             <Image src="/apple-logo.svg" alt="iOS"
-                                                                   className="w-3 h-3.5 inline-block mr-2"/>
+                                                                   className="w-3 h-3.5 inline-block mr-2" width={20}
+                                                                   height={20}/>
                                                         )}
                                                         {build.name}
                                                     </SelectItem>

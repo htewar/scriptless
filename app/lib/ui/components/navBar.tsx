@@ -1,4 +1,4 @@
-import { Plus, List, History } from 'lucide-react';
+import {Plus, List, History, LayoutGrid} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { RoutePaths } from '../../utils/routes';
@@ -20,6 +20,11 @@ const SideBarOptions = (platform: string) => [
         name: "History",
         icon: <History />,
         route: RoutePaths.History(platform)
+    },
+    {
+        name: "Builds",
+        icon: <LayoutGrid/>,
+        route: RoutePaths.Builds(platform)
     },
 ];
 

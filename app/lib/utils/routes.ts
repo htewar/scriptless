@@ -8,4 +8,5 @@ export const RoutePaths = {
     History: (platform: string) => `${Console}/${platform}/history`,
     Recording: (platform: string, id: string) => `${Console}/${platform}/${TestCase}/recording/${id}`,
     Trigger: (platform: string, id: string) => `${Console}/${platform}/${TestCase}/trigger/${id}`,
+    Builds: (platform: string) => `${Console}/${platform}/builds`,
 }
