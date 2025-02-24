@@ -1,9 +1,10 @@
-'use client'
+"use client"
 
 import { useRouter } from 'next/navigation'
 import LoginForm from "./lib/ui/components/loginForm";
 import { useEffect, useState } from "react";
-import { RoutePaths } from "./lib/utils/routes";
+import { apiClient } from './lib/api/apiClient';
+import { RoutePaths } from './lib/utils/routes';
 import Cookies from 'js-cookie';
 
 export default function Home() {
@@ -14,42 +15,52 @@ export default function Home() {
   useEffect(() => {
     const authToken = Cookies.get('authToken');
     if (authToken) {
-      router.replace(RoutePaths.TestCases(""));
+      router.push(RoutePaths.Console);
     }
-  }, [router]);
+  }, [router])
 
-
-  const handleLogin = (values: { username: string; password: string }) => {
-    console.log("Login", values);
+  const handleLogin = async (values: { username: string; password: string }) => {
     setLoading(true);
-    setTimeout(() => {
+    if (values.username === '' || values.password === '') {
+      setErrorMessage('Please enter username and password');
       setLoading(false);
-      router.replace(RoutePaths.Console);
-    }, 1000);
-    // if (values.username === "admin" && values.password === "admin") {
-    //   setLoading(true);
-    //   setTimeout(() => {
-    //     const expirationDate = new Date(new Date().getTime() + 15 * 60 * 1000);
-    //     // Cookies.set('authToken', 'authTokenValue', { expires: expirationDate });
-    //     router.replace(RoutePaths.Console);
-    //   }, 2000);
-    //   return;
-    // }
-    // setLoading(true);
-    // setTimeout(() => {
-    //   setLoading(false);
-    //   setErrorMessage("Invalid username or password");
-    // }, 2000);
+      return;
+    }
+    await authenticUser(values.username, values.password);
   };
 
+  async function authenticUser(username: string, password: string) {
+    try {
+      const loginResponse = await apiClient.login(username, password);
+      console.log(loginResponse);
+      if (loginResponse.isUserAuthenticated) {
+        const token = loginResponse.user?.token;
+        if (token) {
+          const expirationDate = new Date(new Date().getTime() + 60 * 60 * 1000);
+          Cookies.set('authToken', token, { expires: expirationDate });
+          Cookies.set('uid', loginResponse.user?.uid || "", { expires: expirationDate });
+        }
+        router.push(RoutePaths.Console);
+      } else {
+        setErrorMessage(loginResponse.errorMessage ? loginResponse.errorMessage : 'Failed to login. Please try again.');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      setErrorMessage('Failed to login. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div>
-      <LoginForm
-        onSubmitForm={handleLogin}
-        isLoading={isLoading}
-        errorMessage={errorMessage}
-        onFormDataUpdate={() => { setErrorMessage(null) }}
-      />
-    </div>
+      <div>
+        <LoginForm
+            onSubmitForm={handleLogin}
+            isLoading={isLoading}
+            errorMessage={errorMessage}
+            onFormDataUpdate={() => { setErrorMessage(null) }}
+        />
+      </div>
   );
 }
+

@@ -59,5 +59,5 @@ class DBClient {
         return await TestCase.findAll();
     }
 }
-
-export default new DBClient();
+const dbClient = new DBClient();
+export default dbClient

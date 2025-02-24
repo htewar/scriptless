@@ -52,7 +52,7 @@ export default function TriggerNewTestCase() {
                 <div className="border border-primary py-4 w-[500] px-20 rounded-lg">
                     <h1 className="text-2xl font-bold text-center">Trigger Test Case</h1>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit((_) => { })}>
+                        <form onSubmit={form.handleSubmit(() => { })}>
                             <div className="mt-6" />
                             <FormField
                                 control={form.control}

@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -19,13 +19,7 @@ import Metadata from "./ComponentMetaData"
 
 const formSchema = z.object({
     username: z.string(),
-    // .trim().min(1, {
-    //     message: "Please enter Username",
-    // }),
     password: z.string()
-    // .trim().min(1, {
-    //     message: "Please enter Password.",
-    // }),
 })
 
 interface LoginFormProps {
@@ -54,7 +48,7 @@ export default function LoginForm({ onSubmitForm, isLoading, errorMessage, onFor
                     <div className="absolute z-20 h-screen w-screen flex items-center justify-center -mt-10">
                         <div className="w-[400] bg-black/50 backdrop-blur-sm rounded-lg p-6 border border-white">
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmitForm)}>
+                                <form onSubmit={form.handleSubmit(onSubmitForm)} className="text-white">
                                     <FormField
                                         control={form.control}
                                         name="username"
@@ -62,7 +56,7 @@ export default function LoginForm({ onSubmitForm, isLoading, errorMessage, onFor
                                             <FormItem>
                                                 <FormLabel>Username</FormLabel>
                                                 <FormControl>
-                                                    <Input disabled={isLoading} type="string" {...field} onChangeCapture={ () => onFormDataUpdate()} />
+                                                    <Input disabled={isLoading} type="string" {...field} onChangeCapture={() => onFormDataUpdate()} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -76,7 +70,7 @@ export default function LoginForm({ onSubmitForm, isLoading, errorMessage, onFor
                                                 <FormItem>
                                                     <FormLabel>Password</FormLabel>
                                                     <FormControl>
-                                                        <Input disabled={isLoading} type="password" {...field} onChangeCapture={value => onFormDataUpdate()} />
+                                                        <Input disabled={isLoading} type="password" {...field} onChangeCapture={() => onFormDataUpdate()} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

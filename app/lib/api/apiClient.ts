@@ -1,38 +1,39 @@
 import { TestCase } from "../models/TestCase";
-import { delay } from "../utils/delay";
+import LoginApiResponse, {User} from "@/app/lib/models/LoginApiResponse";
 
 class ApiClient {
-    private baseUrl: string;
+    private readonly baseUrl: string;
+    private readonly apiVersion: string;
 
-    constructor(baseUrl: string) {
+    constructor(baseUrl: string, apiVersion: string) {
         this.baseUrl = baseUrl;
+        this.apiVersion = apiVersion;
     }
 
-    async login(username: string, password: string) {
+    async login(username: string, password: string): Promise<LoginApiResponse> {
+        const formData = new FormData();
+        formData.append('user_name', username);
+        formData.append('password', password);
 
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/user/authenticate`, {
+            method: 'POST',
+            body: formData,
+        });
+        if (!response.ok) {
+            return new LoginApiResponse(false, 'Failed to authenticate user');
+        }
+        const data = await response.json();
+        const message = data.message
+        const uid = data.data.uid
+        const uname = data.data.username
+        const token = data.data.token
+        return new LoginApiResponse(true, message, new User(uid, uname, token));
     }
 
     async getTestCases(): Promise<TestCase[]> {
         const response = await fetch(`http://localhost:3000/api/test-case`);
         return response.json();
     }
-
-    async recordingTest(id: string, interval: number = 5000): Promise<TestCase> {
-        while (true) {
-            try {
-                const response = await fetch(`${this.baseUrl}/long_polling?xml_file=1734929109031_dump.xml`);
-                if (response.ok) {
-                    const data = await response.json();
-                    return new TestCase(data.id, data.platform, data.methodName);
-                } else {
-                    console.error('Failed to fetch data');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-            await delay(interval);
-        }
-    }
 }
 
-export const apiClient = new ApiClient('172.23.132.110:5000');
+export const apiClient = new ApiClient('http://localhost:3000', "v1");
