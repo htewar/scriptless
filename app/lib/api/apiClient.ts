@@ -1,5 +1,10 @@
-import TestCasesApiResponse, {TestCase, TestCaseApiResponse} from "../models/TestCasesApiResponse";
+import TestCasesApiResponse, {
+    CreateTestCaseApiResponse,
+    TestCase,
+    TestCaseApiResponse
+} from "../models/TestCasesApiResponse";
 import LoginApiResponse, {User} from "@/app/lib/models/LoginApiResponse";
+import {GetBuildsApiResponse} from "@/app/lib/models/GetBuildsApiResponse";
 
 class ApiClient {
     private readonly baseUrl: string;
@@ -80,19 +85,35 @@ class ApiClient {
                 testCases
             )
         }
-        // const testCases: TestCase[] = []
-        // responseData.data.forEach((data: never) => {
-        //     console.log("TestCase Data ===> ", data.test_case_name);
-        //     testCases.push(new TestCase(
-        //         data.test_case_uuid,
-        //         data.uid,
-        //         data.test_case_name,
-        //         data.app_name,
-        //         data.platform,
-        //         data.config_path
-        //     ))
-        // });
-        // return testCases;
+    }
+
+    async getBuilds(uid: string): Promise<GetBuildsApiResponse> {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/builds?uid=${uid}`);
+        const responseData = await response.json();
+        return new GetBuildsApiResponse(responseData.message, responseData.builds);
+    }
+
+    async addNewTestMethod(formData: FormData): Promise<CreateTestCaseApiResponse> {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/test-case`, {
+            method: 'POST',
+            body: formData,
+        });
+        const responseData = await response.json();
+        const responseMessage = await responseData.message;
+        console.log("Create Test Case Response :: ", responseMessage)
+        if (!response.ok) {
+            return new CreateTestCaseApiResponse(true, responseMessage);
+        } else {
+            const testCase = await responseData.data;
+            return new CreateTestCaseApiResponse(false, responseMessage, new TestCase(
+                testCase.test_case_uuid,
+                testCase.uid,
+                testCase.test_case_name,
+                testCase.app_name,
+                testCase.platform,
+                testCase.config_path
+            ));
+        }
     }
 }
 

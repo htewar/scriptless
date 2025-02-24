@@ -1,19 +1,36 @@
-"use client"
+'use client'
 
-import {z} from "zod";
-import {useParams, useRouter} from "next/navigation";
-import {useState} from "react";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {z} from "zod"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
+import {Button} from "@/components/ui/button"
+import {BeatLoader} from "react-spinners"
+import {Input} from "@/components/ui/input"
+import {useState, useEffect} from "react";
+import {useParams, useRouter} from 'next/navigation'
+import Cookies from "js-cookie";
+import Metadata from "@/app/lib/ui/components/ComponentMetaData"
+import {apiClient} from "@/app/lib/api/apiClient";
+import {Build} from "@/app/lib/models/GetBuildsApiResponse";
+import {CreateTestCaseApiResponse} from "@/app/lib/models/TestCasesApiResponse";
 import {RoutePaths} from "@/app/lib/utils/routes";
-import {v4} from "uuid";
-import Metadata from "@/app/lib/ui/components/ComponentMetaData";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {Input} from "@/components/ui/input";
 import FileUploadButton from "@/app/lib/ui/components/FileUploadButton";
-import {Button} from "@/components/ui/button";
-import {BeatLoader} from "react-spinners";
+import Image from "next/image";
 
 const formSchema = z.object({
     application: z.string(),
@@ -21,7 +38,8 @@ const formSchema = z.object({
     platform: z.string(),
 })
 
-export default function CreateNewTestCase() {
+export default function AddNewTestCaseScreen() {
+
     const router = useRouter()
     const { slug } = useParams();
 
@@ -29,9 +47,34 @@ export default function CreateNewTestCase() {
     const [platform, setPlatform] = useState<string>("")
     const [application, setApplication] = useState<string>("")
     const [configFile, setConfigFile] = useState<FileList | null>(null)
-    const [apkFile, setAPKFile] = useState<FileList | null>(null)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [uid, setUid] = useState<string>("")
+    const [builds, setBuilds] = useState<Build[]>([])
+
+    useEffect(() => {
+        const userId = Cookies.get('uid') as string;
+        const authToken = Cookies.get('authToken');
+        if (!authToken) {
+            router.replace("/");
+        } else {
+            const uid = Cookies.get('uid') as string;
+            setUid(uid);
+            fetchUserBuilds(userId)
+        }
+    }, [])
+
+    async function fetchUserBuilds(userId: string) {
+        setIsLoading(true)
+        const buildsResponse = await apiClient.getBuilds(userId)
+        setIsLoading(false)
+        setBuilds(buildsResponse.builds)
+        setBuilds(
+            buildsResponse.builds.sort((a, b) =>
+                new Date(b.uploadedDate).getTime() - new Date(a.uploadedDate).getTime()
+            )
+        )
+    }
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -43,48 +86,66 @@ export default function CreateNewTestCase() {
     })
 
     const isValidData = () => {
-        // if (application.length == 0) {
-        //     setErrorMessage("Please select Application.")
-        //     return false
-        // }
-        // if (methodName.length == 0) {
-        //     setErrorMessage("Please enter Method name.")
-        //     return false
-        // }
-        // if (platform.length == 0) {
-        //     setErrorMessage("Please select platform.")
-        //     return false
-        // }
-        // if (configFile == null) {
-        //     setErrorMessage("Please upload Config file")
-        //     return false
-        // }
-        // if (apkFile == null) {
-        //     setErrorMessage("Please upload APK file")
-        //     return false
-        // }
+        if (application.length == 0) {
+            setErrorMessage("Please select Application.")
+            return false
+        }
+        if (methodName.length == 0) {
+            setErrorMessage("Please enter Method name.")
+            return false
+        }
+        if (configFile == null) {
+            setErrorMessage("Please upload Config file")
+            return false
+        }
         return true
     }
 
     const addNewTestMethod = () => {
         if (isValidData()) {
             setIsLoading(true);
-            setTimeout(() => {
-                setIsLoading(false);
-                const url = RoutePaths.Recording(`${slug as string}`, `${v4()}`);
-                router.replace(url)
-            }, 2000);
+            setErrorMessage(null);
+            const formData = new FormData();
+            formData.append('uid', uid);
+            formData.append('app_name', application);
+            formData.append('platform', platform);
+            formData.append('test_case_name', methodName);
+            if (configFile) {
+                formData.append('config', configFile[0]);
+            }
+            apiClient.addNewTestMethod(formData)
+                .then((response: CreateTestCaseApiResponse) => {
+                    setIsLoading(false);
+                    if (response.isError) {
+                        setErrorMessage(response.errorMessage || "Failed to add new test method.");
+                    } else {
+                        if (response.testCase == null) {
+                            setErrorMessage("Failed to add new test method.");
+                            return;
+                        }
+                        const url = RoutePaths.Recording(`${slug as string}`, `${response.testCase.testCaseUUID}`);
+                        router.replace(url)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
     }
 
-    const setPlatformData = (platform: string) => {
-        setPlatform(platform)
-        setErrorMessage(null)
-    }
-
     const setApplicationData = (application: string) => {
-        setApplication(application)
+        setApplication(application.split(".")[0])
         setErrorMessage(null)
+        if (application.includes(".aab") || application.includes(".apk")) {
+            setPlatform("Android");
+            form.setValue("platform", "Android");
+        } else if (application.includes(".ipa") || application.includes(".app")) {
+            setPlatform("iOS");
+            form.setValue("platform", "iOS");
+        } else {
+            setPlatform("");
+            form.setValue("platform", "");
+        }
     }
 
     return (
@@ -115,11 +176,39 @@ export default function CreateNewTestCase() {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="carbon">Carbon</SelectItem>
-                                                <SelectItem value="helix">Helix</SelectItem>
-                                                <SelectItem value="eats">Eats</SelectItem>
+                                                {builds.map((build) => (
+                                                    <SelectItem key={build.id} value={`${build.name}${build.ext}`}>
+                                                        {(build.type === "android") ? (
+                                                            <Image src="/android-logo.svg" alt="Android"
+                                                                   className="w-4 h-4 inline-block mr-1"/>
+                                                        ) : (
+                                                            <Image src="/apple-logo.svg" alt="iOS"
+                                                                   className="w-3 h-3.5 inline-block mr-2"/>
+                                                        )}
+                                                        {build.name}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="mt-4" />
+                            <FormField
+                                control={form.control}
+                                name="platform"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Platform</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="Platform"
+                                                disabled={true}
+                                                type="string" {...field}
+                                                value={platform}
+                                            />
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -146,34 +235,6 @@ export default function CreateNewTestCase() {
                                     </FormItem>
                                 )}
                             />
-                            <div className="mt-4" />
-                            <FormField
-                                control={form.control}
-                                name="platform"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Platform</FormLabel>
-                                        <Select
-                                            disabled={isLoading}
-                                            onValueChange={(event) =>
-                                                setPlatformData(event)
-                                            }
-                                            defaultValue={field.value}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select platform" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="android">Android</SelectItem>
-                                                <SelectItem value="ios">iOS</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                         </form>
                     </Form>
                     <div className="mt-4" />
@@ -186,23 +247,13 @@ export default function CreateNewTestCase() {
                         }}
                         disabled={isLoading}
                     />
-                    <div className="mt-4" />
-                    <FileUploadButton
-                        label="APK File"
-                        accept=".apk,.aab"
-                        onFileChange={(file: FileList | null) => {
-                            setAPKFile(file)
-                            setErrorMessage(null)
-                        }}
-                        disabled={isLoading}
-                    />
                     <div className="mt-6" />
                     <div className="flex items-center gap-2">
-                        <Button className="bg-white text-black hover:bg-transparent hover:border hover:text-white"
+                        <Button className=""
                                 onClick={addNewTestMethod}
                                 disabled={isLoading}
                         >
-                            {(isLoading ? <BeatLoader color="#000000" /> : "Save")}
+                            {(isLoading ? <BeatLoader color="#FFFFFF"/> : "Save")}
                         </Button>
                         {errorMessage && <p className="text-red-500 text-sm font-bold">{errorMessage}</p>}
                     </div>
