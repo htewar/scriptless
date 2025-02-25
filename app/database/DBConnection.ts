@@ -1,9 +1,10 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import {Sequelize, DataTypes} from 'sequelize';
 import User from './models/User';
 import TestCase from './models/TestCase';
 import IndividualStep from './models/IndividualStep';
 import PlaySession from './models/PlaySession';
 import TestCaseExecution from './models/TestCaseExecution';
+import Build from "@/app/database/models/Build";
 
 const sequelize = new Sequelize(
     `${process.env.MYSQL_DATABASE}`,
@@ -51,10 +52,59 @@ class DBConnection {
             await this.syncIndividualStepModel();
             await this.syncPlaySessionModel();
             await this.syncTestCaseExecutionModel();
+            await this.syncBuildModel();
             console.log('All models were synchronized successfully.');
         } catch (err) {
             console.error('Unable to sync models:', err);
         }
+    }
+
+    async syncBuildModel() {
+        // declare build_uuid: string;
+        // declare uid: string;
+        // declare build_name: string;
+        // declare ext: string;
+        // declare platform: string;
+        // declare path: string;
+
+        Build.init(
+            {
+                build_uuid: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    primaryKey: true,
+                },
+                uid: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                build_name: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                ext: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                platform: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                path: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                }
+            },
+            {
+                sequelize,
+                tableName: 'build',
+            }
+        );
+        User.hasMany(Build, {foreignKey: 'uid'});
+        Build.belongsTo(User, {foreignKey: 'uid'});
+        await Build.sync({
+            alter: true
+        })
     }
 
     async syncTestCaseExecutionModel() {
@@ -91,10 +141,10 @@ class DBConnection {
                 tableName: 'test_case_execution',
             }
         )
-        User.hasMany(TestCaseExecution, { foreignKey: 'uid' });
-        TestCaseExecution.belongsTo(User, { foreignKey: 'uid' });
-        TestCase.hasMany(TestCaseExecution, { foreignKey: 'test_case_uuid' });
-        TestCaseExecution.belongsTo(TestCase, { foreignKey: 'test_case_uuid' });
+        User.hasMany(TestCaseExecution, {foreignKey: 'uid'});
+        TestCaseExecution.belongsTo(User, {foreignKey: 'uid'});
+        TestCase.hasMany(TestCaseExecution, {foreignKey: 'test_case_uuid'});
+        TestCaseExecution.belongsTo(TestCase, {foreignKey: 'test_case_uuid'});
         await TestCaseExecution.sync({
             alter: true
         })
@@ -126,10 +176,10 @@ class DBConnection {
                 tableName: 'play_session',
             }
         )
-        User.hasMany(PlaySession, { foreignKey: 'uid' });
-        PlaySession.belongsTo(User, { foreignKey: 'uid' });
-        TestCase.hasMany(PlaySession, { foreignKey: 'test_case_uuid' });
-        PlaySession.belongsTo(TestCase, { foreignKey: 'test_case_uuid' });
+        User.hasMany(PlaySession, {foreignKey: 'uid'});
+        PlaySession.belongsTo(User, {foreignKey: 'uid'});
+        TestCase.hasMany(PlaySession, {foreignKey: 'test_case_uuid'});
+        PlaySession.belongsTo(TestCase, {foreignKey: 'test_case_uuid'});
         await PlaySession.sync({
             alter: true
         })
@@ -189,8 +239,8 @@ class DBConnection {
                 tableName: 'individual_step',
             }
         )
-        TestCase.hasMany(IndividualStep, { foreignKey: 'test_case_uuid' });
-        IndividualStep.belongsTo(TestCase, { foreignKey: 'test_case_uuid' });
+        TestCase.hasMany(IndividualStep, {foreignKey: 'test_case_uuid'});
+        IndividualStep.belongsTo(TestCase, {foreignKey: 'test_case_uuid'});
         await IndividualStep.sync({
             alter: true
         })
@@ -230,9 +280,9 @@ class DBConnection {
                 tableName: 'test_case',
             }
         )
-        User.hasMany(TestCase, { foreignKey: 'uid' });
-        TestCase.belongsTo(User, { foreignKey: 'uid' });
-        await TestCase.sync({ alter: true })
+        User.hasMany(TestCase, {foreignKey: 'uid'});
+        TestCase.belongsTo(User, {foreignKey: 'uid'});
+        await TestCase.sync({alter: true})
     }
 
     async syncUserModel() {
@@ -257,8 +307,9 @@ class DBConnection {
                 tableName: 'user',
             }
         )
-        await User.sync({ alter: true })
+        await User.sync({alter: true})
     }
 }
+
 const dbConnection = new DBConnection()
 export default dbConnection;

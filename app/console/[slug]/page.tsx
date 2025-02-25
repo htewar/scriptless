@@ -90,12 +90,16 @@ export default function TestCases() {
                             />
                         )
                     }
+                    {(testCases.length == 0 && !isLoading) &&
+                        <div className="flex flex-col items-center justify-center h-full">
+                            <p className="text-foreground">No test cases found.</p>
+                        </div>
+                    }
                     {(testCases.length > 0 && !isLastPage) &&
                         <div className="mb-5" ref={ref}>
                             <p className="text-foreground my-auto mx-auto">Loading...</p>
                         </div>
                     }
-
                 </div>
             </div>
         </div>

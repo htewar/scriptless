@@ -1,15 +1,18 @@
 export class Build {
-    id: number
-    name: string
-    type: string
-    ext: string
+    buildUUID: string;
+    name: string;
+    ext: string;
+    platform: string;
+    path: string;
     uploadedDate: string
 
-    constructor(id: number, name: string, type: string, ext: string, uploadedDate: string) {
-        this.id = id
-        this.name = name
-        this.type = type
+
+    constructor(build_uuid: string, uid: string, build_name: string, ext: string, platform: string, path: string, uploadedDate: string) {
+        this.buildUUID = build_uuid
+        this.name = build_name
         this.ext = ext
+        this.platform = platform
+        this.path = path
         this.uploadedDate = uploadedDate
     }
 }

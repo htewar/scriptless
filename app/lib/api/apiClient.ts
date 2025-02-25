@@ -4,7 +4,7 @@ import TestCasesApiResponse, {
     TestCaseApiResponse
 } from "../models/TestCasesApiResponse";
 import LoginApiResponse, {User} from "@/app/lib/models/LoginApiResponse";
-import {GetBuildsApiResponse} from "@/app/lib/models/GetBuildsApiResponse";
+import {Build, GetBuildsApiResponse} from "@/app/lib/models/GetBuildsApiResponse";
 
 class ApiClient {
     private readonly baseUrl: string;
@@ -90,7 +90,30 @@ class ApiClient {
     async getBuilds(uid: string): Promise<GetBuildsApiResponse> {
         const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/builds?uid=${uid}`);
         const responseData = await response.json();
-        return new GetBuildsApiResponse(responseData.message, responseData.builds);
+        if (!response.ok) {
+            return new GetBuildsApiResponse(responseData.message, []);
+        } else {
+            const builds: Build[] = responseData.builds.map((data: {
+                build_uuid: string;
+                uid: string;
+                build_name: string;
+                ext: string;
+                platform: string;
+                path: string,
+                updatedAt: string
+            }) => {
+                return new Build(
+                    data.build_uuid,
+                    data.uid,
+                    data.build_name,
+                    data.ext,
+                    data.platform,
+                    data.path,
+                    data.updatedAt
+                )
+            })
+            return new GetBuildsApiResponse(responseData.message, builds);
+        }
     }
 
     async addNewTestMethod(formData: FormData): Promise<CreateTestCaseApiResponse> {
@@ -138,4 +161,4 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient('http://172.23.193.145:3000/', "v1");
+export const apiClient = new ApiClient('http://172.19.156.183:3000', "v1");

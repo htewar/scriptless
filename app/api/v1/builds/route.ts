@@ -3,6 +3,9 @@ import {NextRequest, NextResponse} from "next/server";
 import path from 'path';
 import {promises as fs} from 'fs';
 import AdmZip from 'adm-zip';
+import DBConnection from "@/app/database/DBConnection";
+import Build from "@/app/database/models/Build";
+import {v4} from "uuid";
 
 export async function POST(request: NextRequest) {
     const formData = await request.formData();
@@ -19,40 +22,59 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({message: "build is not a file"}, {status: 400});
     }
 
+    await DBConnection.connect();
+    await DBConnection.syncModels();
+
     const fileName = build.name;
     const fileExtension = path.extname(fileName).toLowerCase();
 
     console.log("File:", fileName, "Extension:", fileExtension);
 
-    if ([".apk", ".aab", ".ipa", ".app", ".zip"].includes(fileExtension)) {
-        const arrayBuffer = await build.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const buildDir = path.join(process.cwd(), `app/storage/${uid}/builds`);
+    try {
+        if ([".apk", ".aab", ".ipa", ".app", ".zip"].includes(fileExtension)) {
+            const arrayBuffer = await build.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const buildDir = path.join(process.cwd(), `storage/${uid}/builds`);
 
-        await fs.mkdir(buildDir, {recursive: true});
+            await fs.mkdir(buildDir, {recursive: true});
 
-        if (fileExtension === ".zip") {
-            const zip = new AdmZip(buffer);
-            const zipEntries = zip.getEntries();
+            if (fileExtension === ".zip") {
+                const zip = new AdmZip(buffer);
+                const zipEntries = zip.getEntries();
 
-            // Find the .app bundle inside the zip
-            const appEntry = zipEntries.find(entry => entry.entryName.endsWith(".app/"));
-            if (!appEntry) {
-                return NextResponse.json({message: "zip file must contain an .app bundle."}, {status: 400});
+                const appEntry = zipEntries.find(entry => entry.entryName.endsWith(".app/"));
+                if (!appEntry) {
+                    return NextResponse.json({message: "zip file must contain an .app bundle."}, {status: 400});
+                }
+                zip.extractAllTo(buildDir, true);
+                const build = await Build.createBuild(
+                    v4(),
+                    uid,
+                    fileName.split(".")[0],
+                    '.app',
+                    'iOS',
+                    `${buildDir}/${fileName}.app`
+                )
+                return NextResponse.json({message: "Build Uploaded successfully.", build: build}, {status: 200});
+            } else {
+                const filePath = path.join(buildDir, fileName);
+                await fs.writeFile(filePath, buffer);
+                const build = await Build.createBuild(
+                    v4(),
+                    uid,
+                    fileName.split(".")[0],
+                    fileExtension,
+                    fileExtension === '.apk' || fileExtension === '.aab' ? 'android' : 'iOS',
+                    filePath
+                )
+                return NextResponse.json({message: "Build Uploaded successfully.", build: build}, {status: 200});
             }
-
-            // Extract the entire .app bundle
-            zip.extractAllTo(buildDir, true);
-
-            return NextResponse.json({message: "Build Uploaded successfully."}, {status: 200});
         } else {
-            const filePath = path.join(buildDir, fileName);
-            await fs.writeFile(filePath, buffer);
-
-            return NextResponse.json({message: "Build Uploaded successfully."}, {status: 200});
+            return NextResponse.json({message: `Invalid build format: ${fileExtension}`}, {status: 400});
         }
-    } else {
-        return NextResponse.json({message: `Invalid build format: ${fileExtension}`}, {status: 400});
+    } catch (e) {
+        console.error(e)
+        return NextResponse.json({message: `Enable to upload build :: ${e}`}, {status: 400});
     }
 }
 
@@ -66,31 +88,15 @@ export async function GET(request: NextRequest) {
             {status: 400}
         );
     }
-
-    const buildsDir = path.join(process.cwd(), `app/storage/${uid}/builds`);
+    await DBConnection.connect()
+    await DBConnection.syncBuildModel()
 
     try {
-        const files = await fs.readdir(buildsDir);
-        const validExtensions = ['.apk', '.aab', '.ipa', '.app'];
-        const filesResponse = await Promise.all(files
-            .filter(file => validExtensions.includes(path.extname(file).toLowerCase()))
-            .map(async (file, index) => {
-                const filePath = path.join(buildsDir, file);
-                const stats = await fs.stat(filePath);
-                const fileType = path.extname(file).toLowerCase() === '.apk' || path.extname(file).toLowerCase() === '.aab' ? 'android' : 'iOS';
-                return {
-                    id: index,
-                    name: file.split(".")[0],
-                    type: fileType,
-                    uploadedDate: stats.mtime,
-                    ext: path.extname(file).toLowerCase(),
-                    path: `storage/${uid}/builds/${file}`
-                };
-            }));
+        const builds = await Build.getBuilds(uid);
         return NextResponse.json(
             {
-                message: "Builds found.",
-                builds: filesResponse
+                message: `${builds.length === 0} ? "No Builds found." : "Builds found."`,
+                builds: builds
             },
             {status: 200}
         );
@@ -109,7 +115,7 @@ export async function GET(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
     const {searchParams} = new URL(request.url);
     const uid = searchParams.get('uid');
-    const buildName = searchParams.get('build');
+    const buildUUID = searchParams.get('build_uuid');
 
     if (isNullOrEmpty(uid)) {
         return NextResponse.json(
@@ -117,17 +123,26 @@ export async function DELETE(request: NextRequest) {
             {status: 400}
         );
     }
-    if (isNullOrEmpty(buildName)) {
+    if (isNullOrEmpty(buildUUID)) {
         return NextResponse.json(
-            {message: "buildName is required"},
+            {message: "build_uuid is required"},
             {status: 400}
         );
     }
 
-    const filePath = path.join(process.cwd(), `app/storage/${uid}/builds`, buildName);
+    await DBConnection.connect()
+    await DBConnection.syncBuildModel()
 
     try {
-        await fs.unlink(filePath);
+        const build = await Build.getBuild(buildUUID);
+        await Build.deleteBuild(buildUUID);
+        if (build === null) {
+            return NextResponse.json(
+                {message: "Build not found."},
+                {status: 404}
+            );
+        }
+        await fs.unlink(build.path);
         return NextResponse.json(
             {message: "Build deleted successfully."},
             {status: 200}

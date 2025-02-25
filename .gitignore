@@ -9,4 +9,4 @@ out
 .DS_Store
 /.idea
 package-lock.json
-/app/storage
+/storage

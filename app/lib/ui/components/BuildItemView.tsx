@@ -20,13 +20,13 @@ export default function BuildItemView({build, onBuildDeleteClick}: BuildItemView
     };
 
     return (
-        <div key={build.id}
+        <div key={build.buildUUID}
              className="mt-2 w-full py-2 px-4 rounded-lg border border-gray-200 flex items-center justify-between">
             <div className="flex gap-4">
-                {(build.type === "android") ? (
-                    <Image src="/android-logo.svg" alt="Android" className="w-6 h-6 inline-block"/>
+                {(build.platform === "android") ? (
+                    <Image src="/android-logo.svg" alt="Android" width={24} height={24}/>
                 ) : (
-                    <Image src="/apple-logo.svg" alt="iOS" className="w-5  h-6 inline-block mr-1"/>
+                    <Image src="/apple-logo.svg" alt="iOS" className="mr-1" width={24} height={24}/>
                 )}
                 {build.name}
             </div>
