@@ -23,17 +23,6 @@ export default function TestCases() {
         threshold: 0,
     });
 
-    useEffect(() => {
-        const authToken = Cookies.get('authToken');
-        if (!authToken) {
-            router.push("/");
-        } else {
-            const uid = Cookies.get('uid') as string;
-            setUid(uid);
-            debouncedSearch(searchQuery, uid);
-        }
-    }, [router, searchQuery])
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSearch = useCallback(
         debounce((query: string, uid: string) => {
@@ -46,6 +35,17 @@ export default function TestCases() {
         }, 500),
         [isLoading]
     );
+
+    useEffect(() => {
+        const authToken = Cookies.get('authToken');
+        if (!authToken) {
+            router.push("/");
+        } else {
+            const uid = Cookies.get('uid') as string;
+            setUid(uid);
+            debouncedSearch(searchQuery, uid);
+        }
+    }, [router, searchQuery, userId, debouncedSearch]);
 
     const fetchTestCases = async (uid: string, query: string, offset: number) => {
         const response = await apiClient.getTestCases(uid, query, offset)

@@ -28,7 +28,8 @@ export default function BuildsPage() {
             formData.append('uid', uid);
             apiClient.uploadBuild(formData)
                 .then(() => {
-                    fetchUserBuilds(uid)
+                    fetchUserBuilds(uid).then(() => {
+                    })
                 })
                 .catch((error) => {
                     console.log(error)
@@ -44,9 +45,10 @@ export default function BuildsPage() {
         } else {
             const uid = Cookies.get('uid') as string;
             setUid(uid);
-            fetchUserBuilds(userId)
+            fetchUserBuilds(userId).then(() => {
+            })
         }
-    }, [])
+    }, [router])
 
     async function fetchUserBuilds(userId: string) {
         setLoading(true)
@@ -64,7 +66,7 @@ export default function BuildsPage() {
         setDeleteConfirmationBuild(null)
         setLoading(true)
         await apiClient.deleteBuild(uid, `${build.name}${build.ext}`)
-        fetchUserBuilds(uid)
+        await fetchUserBuilds(uid)
     }
 
     return (
@@ -76,7 +78,7 @@ export default function BuildsPage() {
                         <h1 className="text-foreground text-4xl font-bold">Builds</h1>
                         <input
                             type="file"
-                            accept=".apk,.aab,.ipa,.app"
+                            accept=".apk,.aab,.ipa,.app,.zip"
                             ref={fileUploadRef}
                             className="hidden"
                             onChange={(e) => {
@@ -99,7 +101,7 @@ export default function BuildsPage() {
                     <div className="flex-1">
                         {builds.map((build) => (
                             <BuildItemView
-                                key={build.id}
+                                key={build.buildUUID}
                                 build={build}
                                 onBuildDeleteClick={(build: Build) => {
                                     setDeleteConfirmationBuild(build)
@@ -122,7 +124,8 @@ export default function BuildsPage() {
                                     setDeleteConfirmationBuild(null)
                                 }}>Cancel</Button>
                                 <Button variant="destructive" onClick={() => {
-                                    deleteBuild(deleteConfirmationBuild)
+                                    deleteBuild(deleteConfirmationBuild).then(() => {
+                                    })
                                 }}>Delete</Button>
                             </div>
                         </div>

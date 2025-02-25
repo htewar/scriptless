@@ -59,14 +59,7 @@ class DBConnection {
         }
     }
 
-    async syncBuildModel() {
-        // declare build_uuid: string;
-        // declare uid: string;
-        // declare build_name: string;
-        // declare ext: string;
-        // declare platform: string;
-        // declare path: string;
-
+    private async syncBuildModel() {
         Build.init(
             {
                 build_uuid: {
@@ -107,7 +100,7 @@ class DBConnection {
         })
     }
 
-    async syncTestCaseExecutionModel() {
+    private async syncTestCaseExecutionModel() {
         TestCaseExecution.init(
             {
                 execution_uuId: {
@@ -150,7 +143,7 @@ class DBConnection {
         })
     }
 
-    async syncPlaySessionModel() {
+    private async syncPlaySessionModel() {
         PlaySession.init(
             {
                 playing_token: {
@@ -185,7 +178,7 @@ class DBConnection {
         })
     }
 
-    async syncIndividualStepModel() {
+    private async syncIndividualStepModel() {
         IndividualStep.init(
             {
                 steps_uuid: {
@@ -246,7 +239,7 @@ class DBConnection {
         })
     }
 
-    async syncTestCaseModel() {
+    private async syncTestCaseModel() {
         TestCase.init(
             {
                 test_case_uuid: {
@@ -285,7 +278,7 @@ class DBConnection {
         await TestCase.sync({alter: true})
     }
 
-    async syncUserModel() {
+    private async syncUserModel() {
         User.init(
             {
                 uid: {

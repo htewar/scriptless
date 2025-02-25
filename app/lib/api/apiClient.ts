@@ -159,6 +159,18 @@ class ApiClient {
             throw new Error('Failed to delete build');
         }
     }
+
+    async updateTestCase(formData: FormData): Promise<TestCaseApiResponse> {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/test-case/edit`, {
+            method: 'POST',
+            body: formData,
+        });
+        if (!response.ok) {
+            return new TestCaseApiResponse(true, 'Failed to update test case');
+        } else {
+            return new TestCaseApiResponse(false, 'Failed to update test case');
+        }
+    }
 }
 
 export const apiClient = new ApiClient('http://172.19.156.183:3000', "v1");

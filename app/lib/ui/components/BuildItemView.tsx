@@ -26,7 +26,7 @@ export default function BuildItemView({build, onBuildDeleteClick}: BuildItemView
                 {(build.platform === "android") ? (
                     <Image src="/android-logo.svg" alt="Android" width={24} height={24}/>
                 ) : (
-                    <Image src="/apple-logo.svg" alt="iOS" className="mr-1" width={24} height={24}/>
+                    <Image src="/apple-logo.svg" alt="iOS" className="mr-1" width={20} height={20}/>
                 )}
                 {build.name}
             </div>

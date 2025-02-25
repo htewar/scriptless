@@ -60,9 +60,10 @@ export default function AddNewTestCaseScreen() {
         } else {
             const uid = Cookies.get('uid') as string;
             setUid(uid);
-            fetchUserBuilds(userId)
+            fetchUserBuilds(userId).then(() => {
+            })
         }
-    }, [])
+    }, [router])
 
     async function fetchUserBuilds(userId: string) {
         setIsLoading(true)
@@ -177,8 +178,9 @@ export default function AddNewTestCaseScreen() {
                                             </FormControl>
                                             <SelectContent>
                                                 {builds.map((build) => (
-                                                    <SelectItem key={build.id} value={`${build.name}${build.ext}`}>
-                                                        {(build.type === "android") ? (
+                                                    <SelectItem key={build.buildUUID}
+                                                                value={`${build.name}${build.ext}`}>
+                                                        {(build.platform === "android") ? (
                                                             <Image src="/android-logo.svg" alt="Android"
                                                                    className="w-4 h-4 inline-block mr-1" width={20}
                                                                    height={20}/>

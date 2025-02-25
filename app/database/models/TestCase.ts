@@ -40,6 +40,34 @@ class TestCase extends Model {
     static async getTestCaseByUUID(testCaseUUID: string) {
         return await this.findOne({ where: { test_case_uuid: testCaseUUID } });
     }
+
+    static async updateTestCase(testCaseUUID: string, testCaseName: string, configPath: string | null) {
+        if (configPath) {
+            await this.update(
+                {
+                    test_case_name: testCaseName,
+                    config_path: configPath,
+                },
+                {
+                    where: {
+                        test_case_uuid: testCaseUUID
+                    }
+                }
+            )
+        } else {
+            await this.update(
+                {
+                    test_case_name: testCaseName,
+                },
+                {
+                    where: {
+                        test_case_uuid: testCaseUUID
+                    }
+                }
+            )
+        }
+
+    }
 }
 
 export default TestCase

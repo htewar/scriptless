@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
         );
     }
     await DBConnection.connect()
-    await DBConnection.syncBuildModel()
+    await DBConnection.syncModels()
 
     try {
         const builds = await Build.getBuilds(uid);
@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     await DBConnection.connect()
-    await DBConnection.syncBuildModel()
+    await DBConnection.syncModels()
 
     try {
         const build = await Build.getBuild(buildUUID);

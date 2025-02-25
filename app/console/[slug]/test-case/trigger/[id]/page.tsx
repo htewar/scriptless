@@ -150,14 +150,16 @@ export default function TriggerNewTestCase() {
                         disabled={false}
                         label="Config file"
                         accept="application/json"
-                        onFileChange={(file: FileList | null) => { }}
+                        onFileChange={() => {
+                        }}
                     />
                     <div className="mt-4" />
                     <FileUploadButton
                         disabled={false}
                         label="APK File"
                         accept=".apk,.aab"
-                        onFileChange={(file: FileList | null) => { }}
+                        onFileChange={() => {
+                        }}
                     />
                     <div className="mt-12" />
                     <div className="flex items-center gap-2">
