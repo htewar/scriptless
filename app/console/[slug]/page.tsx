@@ -5,7 +5,7 @@ import {useCallback, useEffect, useState} from "react";
 import {TestCase} from "@/app/lib/models/TestCasesApiResponse";
 import {useInView} from "react-intersection-observer";
 import Cookies from "js-cookie";
-import {debounce} from "@/app/lib/utils/utils";
+import {debounce, isNullOrEmpty} from "@/app/lib/utils/utils";
 import {apiClient} from "@/app/lib/api/apiClient";
 import {SearchInput} from "@/components/ui/search";
 import {ClipLoader} from "react-spinners";
@@ -38,6 +38,7 @@ export default function TestCases() {
 
     useEffect(() => {
         const authToken = Cookies.get('authToken');
+        if (!isNullOrEmpty(userId)) return
         if (!authToken) {
             router.push("/");
         } else {

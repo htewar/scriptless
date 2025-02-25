@@ -173,4 +173,4 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient('http://172.19.156.183:3000', "v1");
+export const apiClient = new ApiClient(` http://192.168.68.106:3000`, "v1");
