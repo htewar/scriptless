@@ -32,7 +32,7 @@ export default function TestCaseItemView(
                     <Link href="">
                         <Play fill='#000000' className='w-[24] h-[24]' />
                     </Link>
-                    <Link href={`/console/${slug}/test-case/${itemProps.testCase.testCaseUUID}/edit`}>
+                    <Link href={`/console/${slug}/test-case/${itemProps.testCase.testCaseUUID}/record`}>
                         <Pencil fill='#000000' color='#FFFFFF' className='w-[28] h-[28]' />
                     </Link>
                 </div>

@@ -5,6 +5,8 @@ import TestCasesApiResponse, {
 } from "../models/TestCasesApiResponse";
 import LoginApiResponse, {User} from "@/app/lib/models/LoginApiResponse";
 import {Build, GetBuildsApiResponse} from "@/app/lib/models/GetBuildsApiResponse";
+import {Menu, RecordingTestCaseApiResponse} from "@/app/lib/models/RecordingTestCaseApiResponse";
+import {TestCaseElement} from "../models/TestCaseElement";
 
 class ApiClient {
     private readonly baseUrl: string;
@@ -171,6 +173,51 @@ class ApiClient {
             return new TestCaseApiResponse(false, 'Failed to update test case');
         }
     }
+
+    async recording(uid: string, testCaseUUID: string): Promise<RecordingTestCaseApiResponse | null> {
+        const endpoint = `http://127.0.0.1:5000/long_polling?client_id=${testCaseUUID}`;
+        try {
+            const response = await fetch(endpoint, {
+                method: 'GET',
+            });
+
+            if (response.ok) {
+                const responseData = await response.json();
+                console.log("Long polling res :: ", responseData);
+                if (responseData.message != 'Timeout') {
+                    const message = responseData.message;
+                    const elements: TestCaseElement[] = [];
+                    for (const menu of message.menu.elements) {
+                        elements.push(
+                            new TestCaseElement(
+                                menu.index,
+                                menu["resource-id"],
+                                menu.class,
+                                menu.title,
+                                menu["content-desc"],
+                                menu.actions
+                            )
+                        );
+                    }
+                    return new RecordingTestCaseApiResponse(
+                        responseData.client_id,
+                        uid,
+                        message.screenshot_url,
+                        message.xml_url,
+                        message.receiverMessage || '',
+                        new Menu(elements)
+                    );
+                } else {
+                    return null
+                }
+            } else {
+                return null
+            }
+        } catch (e) {
+            console.log(e);
+            return null
+        }
+    }
 }
 
-export const apiClient = new ApiClient(` http://192.168.68.106:3000`, "v1");
+export const apiClient = new ApiClient(`http://192.168.68.113:3000`, "v1");

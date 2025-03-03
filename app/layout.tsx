@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+    <body data-testim-main-word-scripts-loaded="true">
         {children}
       </body>
     </html>
