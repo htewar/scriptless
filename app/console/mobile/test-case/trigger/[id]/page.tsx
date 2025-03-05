@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button"
 import FileUploadButton from "@/app/lib/ui/components/FileUploadButton"
 import { useForm } from "react-hook-form"
-import { useParams, useRouter } from "next/navigation"
+import {useRouter} from "next/navigation"
 import { RoutePaths } from "@/app/lib/utils/routes"
 
 const formSchema = z.object({
@@ -34,7 +34,6 @@ const formSchema = z.object({
 
 export default function TriggerNewTestCase() {
     const router = useRouter()
-    const { slug } = useParams();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -166,7 +165,7 @@ export default function TriggerNewTestCase() {
                         <Button
                             className="w-full rounded-full bg-black text-white hover:bg-transparent hover:border hover:text-black"
                             onClick={() => {
-                                router.replace(RoutePaths.TestCases(`${slug}`))
+                                router.replace(RoutePaths.TestCases(`mobile`))
                             }}
                         >
                             Save

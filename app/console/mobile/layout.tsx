@@ -1,14 +1,12 @@
 'use client'
 
 import SideNavBar from "@/app/lib/ui/components/navBar";
-import { useParams } from "next/navigation";
 
 
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
-    const { slug } = useParams();
     return (
         <div className="h-screen flex">
-            <SideNavBar platform={(slug as string)}/>
+            <SideNavBar platform={`mobile`}/>
             <div className="flex-1">
                 {children}
             </div>

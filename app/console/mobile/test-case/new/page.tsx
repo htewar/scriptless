@@ -22,7 +22,7 @@ import {Button} from "@/components/ui/button"
 import {BeatLoader} from "react-spinners"
 import {Input} from "@/components/ui/input"
 import {useState, useEffect} from "react";
-import {useParams, useRouter} from 'next/navigation'
+import {useRouter} from 'next/navigation'
 import Cookies from "js-cookie";
 import Metadata from "@/app/lib/ui/components/ComponentMetaData"
 import {apiClient} from "@/app/lib/api/apiClient";
@@ -41,7 +41,6 @@ const formSchema = z.object({
 export default function AddNewTestCaseScreen() {
 
     const router = useRouter()
-    const { slug } = useParams();
 
     const [methodName, setMethodName] = useState<string>("")
     const [platform, setPlatform] = useState<string>("")
@@ -124,7 +123,7 @@ export default function AddNewTestCaseScreen() {
                             setErrorMessage("Failed to add new test method.");
                             return;
                         }
-                        const url = RoutePaths.Recording(`${slug as string}`, `${response.testCase.testCaseUUID}`);
+                        const url = RoutePaths.Recording(`mobile`, `${response.testCase.testCaseUUID}`);
                         router.replace(url)
                     }
                 })

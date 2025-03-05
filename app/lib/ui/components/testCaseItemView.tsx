@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { Play, Pencil } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { TestCase} from "@/app/lib/models/TestCasesApiResponse";
 
 interface TestCaseItemViewProps {
@@ -12,7 +11,6 @@ interface TestCaseItemViewProps {
 export default function TestCaseItemView(
     itemProps: TestCaseItemViewProps
 ) {
-    const { slug } = useParams();
     const testCase = itemProps.testCase
     return (
         <div className="px-6 w-full">
@@ -32,7 +30,7 @@ export default function TestCaseItemView(
                     <Link href="">
                         <Play fill='#000000' className='w-[24] h-[24]' />
                     </Link>
-                    <Link href={`/console/${slug}/test-case/${itemProps.testCase.testCaseUUID}/record`}>
+                    <Link href={`/console/mobile/test-case/${itemProps.testCase.testCaseUUID}/record`}>
                         <Pencil fill='#000000' color='#FFFFFF' className='w-[28] h-[28]' />
                     </Link>
                 </div>

@@ -25,7 +25,6 @@ const formSchema = z.object({
 export default function EditPage() {
     const router = useRouter()
     const {id} = useParams();
-    const {slug} = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [uid, setUid] = useState("");
     const [methodName, setMethodName] = useState<string>("")
@@ -88,7 +87,7 @@ export default function EditPage() {
                     if (response.isError) {
                         setErrorMessage(response.errorMessage || "Failed to add new test method.");
                     } else {
-                        const url = RoutePaths.TestCases(`${slug as string}`);
+                        const url = RoutePaths.TestCases(`mobile`);
                         router.replace(url)
                     }
                 })
