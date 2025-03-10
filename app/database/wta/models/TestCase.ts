@@ -7,15 +7,17 @@ class TestCase extends Model {
     declare feature_name: string;
     declare browser: string;
     declare config_path: string;
+    declare url :string;
 
-    static async createTestCase(testCaseUUID: string, uid: string, testCaseName: string, featureName: string, browser: string, configPath: string) {
+    static async createTestCase(testCaseUUID: string, uid: string, testCaseName: string, featureName: string, browser: string, configPath: string, url: string) {
         return await this.create({
             test_case_uuid: testCaseUUID,
             uid: uid,
             test_case_name: testCaseName,
             feature_name: featureName,
             browser: browser,
-            config_path: configPath
+            config_path: configPath,
+            url:url,
         });
     }
 

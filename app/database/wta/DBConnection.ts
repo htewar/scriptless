@@ -259,6 +259,10 @@ class DBConnection {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
+                url: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
             },
             {
                 sequelize,
