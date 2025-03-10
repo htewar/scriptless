@@ -1,7 +1,7 @@
-import DBConnection from "@/app/database/DBConnection";
+import DBConnection from "@/app/database/mta/DBConnection";
 import {isNullOrEmpty} from "@/app/lib/utils/utils";
 import {NextRequest, NextResponse} from "next/server";
-import TestCase from "@/app/database/models/TestCase";
+import TestCase from "@/app/database/mta/models/TestCase";
 import path from "path";
 import {promises as fs} from "fs";
 import {v4} from "uuid";

@@ -3,8 +3,8 @@ import {NextRequest, NextResponse} from "next/server";
 import path from 'path';
 import {promises as fs} from 'fs';
 import AdmZip from 'adm-zip';
-import DBConnection from "@/app/database/DBConnection";
-import Build from "@/app/database/models/Build";
+import DBConnection from "@/app/database/mta/DBConnection";
+import Build from "@/app/database/mta/models/Build";
 import {v4} from "uuid";
 
 export async function POST(request: NextRequest) {

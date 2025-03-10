@@ -4,7 +4,7 @@ import TestCase from './models/TestCase';
 import IndividualStep from './models/IndividualStep';
 import PlaySession from './models/PlaySession';
 import TestCaseExecution from './models/TestCaseExecution';
-import Build from "@/app/database/models/Build";
+import Build from "@/app/database/mta/models/Build";
 
 const sequelize = new Sequelize(
     `${process.env.MYSQL_DATABASE}`,
