@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   images: {
@@ -10,10 +10,13 @@ const nextConfig: NextConfig = {
       {
         protocol: 'http',
         hostname: '192.168.68.109'
+      },
+      {
+        protocol: 'http',
+        hostname: '172.19.10.55'
       }
     ],
   },
-  crossOrigin: 'anonymous',
 };
 
 export default nextConfig;

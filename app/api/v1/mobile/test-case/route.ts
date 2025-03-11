@@ -7,7 +7,7 @@ import {promises as fs} from "fs";
 import {v4} from "uuid";
 
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
+    const {searchParams} = new URL(request.url);
     const id = searchParams.get('id');
     const uid = searchParams.get('uid');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
 
     if (isNullOrEmpty(uid)) {
         return NextResponse.json(
-            { message: "uid is required" },
-            { status: 400 }
+            {message: "uid is required"},
+            {status: 400}
         );
     }
 
@@ -49,15 +49,15 @@ export async function GET(request: NextRequest) {
                 );
             } else {
                 return NextResponse.json(
-                    { message: "Test case not found" },
-                    { status: 404 }
+                    {message: "Test case not found"},
+                    {status: 404}
                 );
             }
         }
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json(
-                { message: (error as Error).message },
+                {message: (error as Error).message},
                 {status: 500}
             );
         } else {
@@ -148,12 +148,12 @@ export async function POST(request: NextRequest) {
         if (error instanceof Error) {
             return NextResponse.json(
                 {message: (error as Error).message},
-                { status: 500 }
+                {status: 500}
             );
         } else {
             return NextResponse.json(
-                { message: "An error occurred" },
-                { status: 500 }
+                {message: "An error occurred"},
+                {status: 500}
             );
         }
     }

@@ -1,16 +1,31 @@
 version: '3.9'
 
 services:
-  mysql:
+  mysql_web:
     image: mysql:latest
-    container_name: mysql
+    container_name: mysql_web
     ports:
       - "3306:3306"
     env_file:
       - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}_web
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+
+  mysql_mobile:
+    image: mysql:latest
+    container_name: mysql_mobile
+    ports:
+      - "3307:3306"
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}_mobile
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
@@ -24,15 +39,30 @@ services:
     networks:
       - backend
       
-  phpmyadmin:
+  phpmyadmin_web:
     image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin
+    container_name: phpmyadmin_web
     ports:
       - "8080:80"
     env_file:
       - .env
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: mysql_web
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+
+  phpmyadmin_mobile:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin_mobile
+    ports:
+      - "8081:80"
+    env_file:
+      - .env
+    environment:
+      PMA_HOST: mysql_mobile
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}

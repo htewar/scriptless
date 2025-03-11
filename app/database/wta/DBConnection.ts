@@ -7,11 +7,12 @@ import TestCaseExecution from './models/TestCaseExecution';
 import Build from "@/app/database/wta/models/Build";
 
 const sequelize = new Sequelize(
-    `${process.env.MYSQL_DATABASE}`,
+    `${process.env.MYSQL_DATABASE}_web`,
     `${process.env.MYSQL_USER}`,
     `${process.env.MYSQL_PASSWORD}`,
     {
         host: `${process.env.HOST}`,
+        port: 3306,
         dialect: 'mysql',
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         dialectModule: require('mysql2'),

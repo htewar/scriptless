@@ -25,6 +25,9 @@ class ApiClient {
         const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/user/authenticate`, {
             method: 'POST',
             body: formData,
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            }
         });
         if (!response.ok) {
             return new LoginApiResponse(false, 'Failed to authenticate user');
@@ -38,7 +41,7 @@ class ApiClient {
     }
 
     async getTestCase(uid: string, testCaseId: string): Promise<TestCaseApiResponse> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/test-case?uid=${uid}&id=${testCaseId}`);
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mobile/test-case?uid=${uid}&id=${testCaseId}`);
         const responseData = await response.json();
         if (!response.ok) {
             return new TestCaseApiResponse(true, responseData.message || 'Failed to get test case');
@@ -56,7 +59,7 @@ class ApiClient {
     }
 
     async getTestCases(uid: string, query: string, offset: number): Promise<TestCasesApiResponse> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/test-case?uid=${uid}&offset=${offset}&query=${query}`);
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mobile/test-case?uid=${uid}&offset=${offset}&query=${query}`);
         const responseData = await response.json();
         if (!response.ok) {
             return new TestCasesApiResponse(
@@ -90,7 +93,7 @@ class ApiClient {
     }
 
     async getBuilds(uid: string): Promise<GetBuildsApiResponse> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/builds?uid=${uid}`);
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mobile/builds?uid=${uid}`);
         const responseData = await response.json();
         if (!response.ok) {
             return new GetBuildsApiResponse(responseData.message, []);
@@ -119,7 +122,7 @@ class ApiClient {
     }
 
     async addNewTestMethod(formData: FormData): Promise<CreateTestCaseApiResponse> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/test-case`, {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mobile/test-case`, {
             method: 'POST',
             body: formData,
         });
@@ -142,7 +145,7 @@ class ApiClient {
     }
 
     async uploadBuild(formData: FormData): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/builds`, {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mobile/builds`, {
             method: 'POST',
             body: formData,
         });
@@ -153,7 +156,7 @@ class ApiClient {
     }
 
     async deleteBuild(uid: string, buildName: string): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/builds/?uid=${uid}&build=${buildName}`, {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mobile/builds/?uid=${uid}&build=${buildName}`, {
             method: 'DELETE',
         });
         console.log("Delete Response :: ", response)
@@ -163,7 +166,7 @@ class ApiClient {
     }
 
     async updateTestCase(formData: FormData): Promise<TestCaseApiResponse> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/test-case/edit`, {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mobile/test-case/edit`, {
             method: 'POST',
             body: formData,
         });
@@ -220,4 +223,4 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient(`http://localhost:3000`, "v1");
+export const apiClient = new ApiClient(`http://192.168.68.101:3000`, "v1");

@@ -14,13 +14,25 @@ export async function POST(request: NextRequest) {
     if (isNullOrEmpty(userName)) {
         return NextResponse.json(
             { message: "user_name is required" },
-            { status: 400 }
+            {
+                status: 400,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Access-Control-Allow-Origin'
+                }
+            }
         );
     }
     if (isNullOrEmpty(password)) {
         return NextResponse.json(
             { message: "password is required" },
-            { status: 400 }
+            {
+                status: 400,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Access-Control-Allow-Origin'
+                }
+            }
         );
     }
 
@@ -36,25 +48,47 @@ export async function POST(request: NextRequest) {
                     data: user.toJSON()
                 },
                 {
-                    status: 200
+                    status: 200,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Access-Control-Allow-Origin'
+                    }
                 }
             );
         } else {
             return NextResponse.json(
                 { message: "Invalid username or password" },
-                { status: 401 }
+                {
+                    status: 401,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Access-Control-Allow-Origin'
+                    }
+                }
             );
         }
     } catch (error) {
         if (error instanceof Error) {
             return NextResponse.json(
                 { message: (error as Error).message },
-                { status: 500 }
+                {
+                    status: 500,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Access-Control-Allow-Origin'
+                    }
+                }
             );
         } else {
             return NextResponse.json(
                 { message: "An error occurred" },
-                { status: 500 }
+                {
+                    status: 500,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Access-Control-Allow-Origin'
+                    }
+                }
             );
         }
     }
