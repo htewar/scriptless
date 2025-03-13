@@ -1,31 +1,31 @@
 version: '3.9'
 
 services:
-  mysql_web:
+  mysql_wta:
     image: mysql:latest
-    container_name: mysql_web
+    container_name: mysql_wta
     ports:
       - "3306:3306"
     env_file:
       - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}_web
+      MYSQL_DATABASE: ${MYSQL_DATABASE}_wta
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - backend
 
-  mysql_mobile:
+  mysql_mta:
     image: mysql:latest
-    container_name: mysql_mobile
+    container_name: mysql_mta
     ports:
       - "3307:3306"
     env_file:
       - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}_mobile
+      MYSQL_DATABASE: ${MYSQL_DATABASE}_mta
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
@@ -39,30 +39,30 @@ services:
     networks:
       - backend
       
-  phpmyadmin_web:
+  phpmyadmin_wta:
     image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin_web
+    container_name: phpmyadmin_wta
     ports:
       - "8080:80"
     env_file:
       - .env
     environment:
-      PMA_HOST: mysql_web
+      PMA_HOST: mysql_wta
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - backend
 
-  phpmyadmin_mobile:
+  phpmyadmin_mta:
     image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin_mobile
+    container_name: phpmyadmin_mta
     ports:
       - "8081:80"
     env_file:
       - .env
     environment:
-      PMA_HOST: mysql_mobile
+      PMA_HOST: mysql_mta
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}

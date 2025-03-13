@@ -7,7 +7,7 @@ import TestCaseExecution from './models/TestCaseExecution';
 import Build from "@/app/database/wta/models/Build";
 
 const sequelize = new Sequelize(
-    `${process.env.MYSQL_DATABASE}_web`,
+    `${process.env.MYSQL_DATABASE}_wta`,
     `${process.env.MYSQL_USER}`,
     `${process.env.MYSQL_PASSWORD}`,
     {

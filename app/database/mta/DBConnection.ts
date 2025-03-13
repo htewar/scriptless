@@ -7,7 +7,7 @@ import TestCaseExecution from './models/TestCaseExecution';
 import Build from "@/app/database/mta/models/Build";
 
 const sequelize = new Sequelize(
-    `${process.env.MYSQL_DATABASE}_mobile`,
+    `${process.env.MYSQL_DATABASE}_mta`,
     `${process.env.MYSQL_USER}`,
     `${process.env.MYSQL_PASSWORD}`,
     {

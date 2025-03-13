@@ -123,7 +123,7 @@ export default function AddNewTestCaseScreen() {
                             setErrorMessage("Failed to add new test method.");
                             return;
                         }
-                        const url = RoutePaths.Recording(`mobile`, `${response.testCase.testCaseUUID}`);
+                        const url = RoutePaths.Recording(`mta`, `${response.testCase.testCaseUUID}`);
                         router.replace(url)
                     }
                 })

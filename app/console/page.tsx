@@ -12,7 +12,7 @@ const ConsolePlatforms = [
         name: "Mobile Test Automation",
         icon: "/mobile.svg",
         iconSize: "w-14 h-14",
-        slug: "mobile",
+        slug: "mta",
     },
     {
         name: "Backend Test Automation",
@@ -24,7 +24,7 @@ const ConsolePlatforms = [
         name: "Web Test Automation",
         icon: "/web.svg",
         iconSize: "w-12 h-12",
-        slug: "web",
+        slug: "wta",
     },
 ];
 
