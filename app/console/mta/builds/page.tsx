@@ -65,7 +65,7 @@ export default function BuildsPage() {
     async function deleteBuild(build: Build) {
         setDeleteConfirmationBuild(null)
         setLoading(true)
-        await apiClient.deleteBuild(uid, `${build.name}${build.ext}`)
+        await apiClient.deleteBuild(uid, build.buildUUID)
         await fetchUserBuilds(uid)
     }
 

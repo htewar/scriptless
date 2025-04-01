@@ -1,12 +1,10 @@
-import {TestCaseElement} from "@/app/lib/models/TestCaseElement";
-
 export class RecordingTestCaseApiResponse {
     senderId: string
     receiverId: string
     screenshotUrl: string
     xmlUrl: string
     receiverMessage: string
-    menu: Menu
+    menu: Menu[]
 
     constructor(
         senderId: string,
@@ -14,7 +12,7 @@ export class RecordingTestCaseApiResponse {
         screenshotUrl: string,
         xmlUrl: string,
         receiverMessage: string,
-        menu: Menu
+        menu: Menu[]
     ) {
         this.senderId = senderId
         this.receiverId = receiverId
@@ -26,11 +24,59 @@ export class RecordingTestCaseApiResponse {
 }
 
 export class Menu {
-    elements: TestCaseElement[]
+    type: string
+    classType: string
+    name: string
+    title: string
+    resourceId: string
+    label: string
+    enabled: boolean
+    visible: boolean
+    accessible: boolean
+    x: string
+    y: string
+    width: string
+    height: string
+    index: string
+    clickable: boolean
+    xpath: string
+    actions: string[]
 
     constructor(
-        elements: TestCaseElement[]
+        type: string,
+        classType: string,
+        name: string,
+        title: string,
+        resourceId: string,
+        label: string,
+        enabled: boolean,
+        visible: boolean,
+        accessible: boolean,
+        x: string,
+        y: string,
+        width: string,
+        height: string,
+        index: string,
+        clickable: boolean,
+        xpath: string,
+        actions: string[]
     ) {
-        this.elements = elements
+        this.type = type
+        this.classType = classType
+        this.name = name
+        this.title = title
+        this.resourceId = resourceId
+        this.label = label
+        this.enabled = enabled
+        this.visible = visible
+        this.accessible = accessible
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
+        this.index = index
+        this.clickable = clickable
+        this.xpath = xpath
+        this.actions = actions
     }
 }

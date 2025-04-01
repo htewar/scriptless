@@ -13,6 +13,7 @@ import {Separator} from "@/components/ui/separator";
 import {Menu, RecordingTestCaseApiResponse} from "@/app/lib/models/RecordingTestCaseApiResponse";
 import Image from "next/image";
 import {ElementItemView} from "@/app/lib/ui/components/ScreenElementItemView";
+import {RoutePaths} from "@/app/lib/utils/routes";
 
 export default function RecordTestCase() {
     const router = useRouter()
@@ -21,27 +22,39 @@ export default function RecordTestCase() {
     const [testCase, setTestCase] = useState<TestCase | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [testCaseElement, setTestCaseElement] = useState<RecordingTestCaseApiResponse | null>(null)
+    const [screenShotUrl, setScreenShotUrl] = useState<string | null>(null)
+    const [initialLoad, setInitialLoad] = useState<boolean>(true)
+    const [key, setKey] = useState(1);
+    const refreshImage = () => setKey((prev) => prev + 1);
 
     const fetchTestCase = useCallback(async (uid: string, id: string) => {
         return await apiClient.getTestCase(uid, id)
     }, [])
 
-    const startRecording = useCallback(async () => {
+    const startRecording = useCallback(async (action?: {
+        action_type: string;
+        param_value: string;
+        class: string;
+        name: string;
+        label: string;
+        enabled: boolean;
+        visible: boolean;
+        xpath: string
+    }) => {
         setIsLoading(true)
-        const response = await apiClient.recording(uid, testCase?.testCaseUUID as string)
-        if (response != null) {
-            setIsLoading(false)
-            setTestCaseElement(response)
-        } else {
-            await startRecording()
+        refreshImage()
+        try {
+            const response = await apiClient.recording(uid, testCase?.testCaseUUID as string, action)
+            console.log("Recording Response :: ", response)
+            if (response != null) {
+                return response as RecordingTestCaseApiResponse
+            }
+        } catch (error) {
+            console.error("Error during recording: ", error)
         }
     }, [testCase?.testCaseUUID, uid])
 
     useEffect(() => {
-        if (testCase != null && testCaseElement == null) {
-            startRecording().then(() => {
-            })
-        }
         if (testCase == null) {
             const uid = Cookies.get('uid') as string;
             if (!uid) {
@@ -49,36 +62,96 @@ export default function RecordTestCase() {
             }
             setUid(uid)
             setIsLoading(true)
+            refreshImage()
             fetchTestCase(uid, id as string).then((response: TestCaseApiResponse) => {
+                setIsLoading(false)
                 if (!response.isError) {
                     setTestCase(response.data || null)
-                    setIsLoading(false)
                 }
             })
         }
-    }, [testCase, fetchTestCase, id, router, startRecording, testCaseElement]);
+    }, [testCase, fetchTestCase, id, router]);
+
+    useEffect(() => {
+        if (testCase != null && testCaseElement == null) {
+            startRecording().then((recordingApiResponse: RecordingTestCaseApiResponse | undefined) => {
+                if (recordingApiResponse instanceof RecordingTestCaseApiResponse) {
+                    setTestCaseElement(recordingApiResponse)
+                    setScreenShotUrl(`${recordingApiResponse.screenshotUrl}?cache-bust=${key}`)
+                    setInitialLoad(false)
+                    setIsLoading(false)
+                    console.log("RecordingTestCaseApiResponse:: ", recordingApiResponse)
+                } else {
+                    console.log("testCaseElement(Assigned) :: Something wrong", recordingApiResponse)
+                }
+            })
+        }
+    }, [testCase, testCaseElement, startRecording]);
 
     function previewTestCase() {
-
     }
 
-    function saveTestCase() {
-
+    async function saveTestCase() {
+        const actionBody = {
+            action_type: "exit",
+            param_value: "",
+            class: "",
+            name: "",
+            label: "",
+            enabled: false,
+            visible: false,
+            xpath: ""
+        }
+        startRecording(actionBody)
+        router.replace(RoutePaths.TestCases(`mta`))
     }
 
-
+    const recordStep = async (menu: Menu, action: string, input: string | null) => {
+        const actionBody = {
+            "action_type": action,
+            "param_value": input || "",
+            "class": menu.type || menu.classType,
+            "name": menu.name,
+            "title": menu.title,
+            "resource-id": menu.resourceId,
+            "label": menu.label,
+            "enabled": menu.enabled,
+            "visible": menu.visible,
+            "xpath": menu.xpath
+        }
+        setTestCaseElement(null)
+        setScreenShotUrl(null)
+        const response = await startRecording(actionBody)
+        if (response) {
+            setTestCaseElement(response)
+            setIsLoading(false)
+            setScreenShotUrl(`${response.screenshotUrl}?cache-bust=${key}`)
+        }
+    }
     return (
         <>
             <Metadata seoTitle="Record Test Case | Scriptless" seoDescription="Record test case."/>
             <div className="w-full h-full">
-                {isLoading && <FullScreenSyncLoader/>}
-                {(testCase && !isLoading) &&
+                {isLoading && initialLoad && <FullScreenSyncLoader/>}
+                {(testCase) &&
                     <RecordingTestCaseScreen
+                        uniqekey={key}
                         testCase={testCase}
-                        screenshotUrl={testCaseElement?.screenshotUrl || null}
-                        menu={testCaseElement?.menu || null}
+                        screenshotUrl={screenShotUrl}
+                        menu={testCaseElement?.menu || []}
                         onPreviewTestCaseClick={previewTestCase}
+                        isRecordingLoading={isLoading}
                         onSaveTestCaseClick={saveTestCase}
+                        onOptionSelect={(menu: Menu, action: string, input: string | null) => {
+                            let inputAction: string
+                            if (action === "clickable")
+                                inputAction = "click"
+                            else
+                                inputAction = action
+                            console.log("Menu Selected :: ", menu, action)
+                            recordStep(menu, inputAction, input).then(() => {
+                            })
+                        }}
                     />
                 }
             </div>
@@ -87,15 +160,27 @@ export default function RecordTestCase() {
 }
 
 interface RecordingTestCaseScreenProp {
+    uniqekey: number,
     testCase: TestCase,
     screenshotUrl: string | null,
-    menu: Menu | null,
+    menu: Menu[] | [],
     onPreviewTestCaseClick: () => void,
-    onSaveTestCaseClick: () => void
+    isRecordingLoading: boolean,
+    onSaveTestCaseClick: () => void,
+    onOptionSelect: (menu: Menu, action: string, input: string | null) => void
 }
 
 function RecordingTestCaseScreen(
-    {testCase, screenshotUrl, menu, onPreviewTestCaseClick, onSaveTestCaseClick}: RecordingTestCaseScreenProp
+    {
+        uniqekey,
+        testCase,
+        screenshotUrl,
+        menu,
+        onPreviewTestCaseClick,
+        isRecordingLoading,
+        onSaveTestCaseClick,
+        onOptionSelect
+    }: RecordingTestCaseScreenProp
 ) {
     return (
         <div className={"w-full h-full max-w-4xl mx-auto pt-4 flex flex-col"}>
@@ -118,34 +203,55 @@ function RecordingTestCaseScreen(
                 </div>
             </div>
             <Separator/>
-            <div className="flex-1 flex">
-                <div className="flex-1">
-                    {menu?.elements && menu?.elements.length === 0 &&
-                        <div className="flex items-center justify-center h-full">
-                            No elements found.
-                        </div>
-                    }
-                    {(menu?.elements && menu?.elements.length > 0) &&
-                        <div className="h-full w-full overflow-y-auto pt-8 flex flex-col items-start gap-2">
-                            <h2 className="font-medium text-xl mb-4">Select Element:</h2>
-                            {
-                                menu?.elements.map((element, index) => {
-                                    return ElementItemView({
-                                        key: index,
-                                        element: element
-                                    })
-                                })
+            <div className="flex-1 flex overflow-y-auto">
+                {
+                    isRecordingLoading ? <FullScreenSyncLoader/> : <>
+                        <div className="flex-1">
+                            {menu.length === 0 &&
+                                <div className="flex items-center justify-center h-full">
+                                    No elements found.
+                                </div>
+                            }
+                            {(menu.length > 0) &&
+                                <div className="h-full w-full pt-8 flex flex-col items-start gap-2">
+                                    <h2 className="font-medium text-xl mb-4">Select Element:</h2>
+                                    <div
+                                        className="w-full h-full overflow-y-auto no-scrollbar flex flex-col items-start gap-2">
+                                        {
+                                            menu.map((element, index) => {
+                                                return (
+                                                    <ElementItemView
+                                                        key={index}
+                                                        index={index}
+                                                        menu={element}
+                                                        onOptionSelect={(menu: Menu, action: string, input: string | null) => {
+                                                            onOptionSelect(menu, action, input);
+                                                        }}
+                                                    />
+                                                );
+                                            })
+                                        }
+                                    </div>
+                                </div>
                             }
                         </div>
-                    }
-                </div>
-                <div className="flex-1 flex items-center justify-center">
-                    {screenshotUrl &&
-                        <Image src={screenshotUrl} alt={testCase.testCaseName} width={360} height={780}
-                               priority={true}/>
-                    }
-                </div>
+                        <div className=" flex-1 h-full w-full flex items-center justify-center">
+                            {screenshotUrl &&
+                                <Image src={screenshotUrl}
+                                       key={uniqekey}
+                                       alt={testCase.testCaseName}
+                                       width={360}
+                                       height={780}
+                                       unoptimized
+                                       className="border-8 border-gray-700 rounded-[24] shadow-md"
+                                />
+                            }
+                        </div>
+                    </>
+                }
             </div>
         </div>
     )
 }
+
+

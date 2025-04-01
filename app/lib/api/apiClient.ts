@@ -6,7 +6,6 @@ import TestCasesApiResponse, {
 import LoginApiResponse, {User} from "@/app/lib/models/LoginApiResponse";
 import {Build, GetBuildsApiResponse} from "@/app/lib/models/GetBuildsApiResponse";
 import {Menu, RecordingTestCaseApiResponse} from "@/app/lib/models/RecordingTestCaseApiResponse";
-import {TestCaseElement} from "../models/TestCaseElement";
 
 class ApiClient {
     private readonly baseUrl: string;
@@ -155,8 +154,8 @@ class ApiClient {
         }
     }
 
-    async deleteBuild(uid: string, buildName: string): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mta/builds/?uid=${uid}&build=${buildName}`, {
+    async deleteBuild(uid: string, buildID: string): Promise<void> {
+        const response = await fetch(`${this.baseUrl}/api/${this.apiVersion}/mta/builds/?uid=${uid}&build_uuid=${buildID}`, {
             method: 'DELETE',
         });
         console.log("Delete Response :: ", response)
@@ -177,27 +176,62 @@ class ApiClient {
         }
     }
 
-    async recording(uid: string, testCaseUUID: string): Promise<RecordingTestCaseApiResponse | null> {
-        const endpoint = `http://127.0.0.1:5000/long_polling?client_id=${testCaseUUID}`;
+    async recording(uid: string, testCaseUUID: string, action?: {
+        action_type: string;
+        param_value: string;
+        class: string;
+        name: string;
+        label: string;
+        enabled: boolean;
+        visible: boolean;
+        xpath: string
+    } | undefined): Promise<RecordingTestCaseApiResponse | null> {
+        const endpoint = `http://localhost:7777/record/step/listen`;
+        let body: string
+        if (action) {
+            body = JSON.stringify({
+                token: `${testCaseUUID}`,
+                action: action,
+            })
+        } else {
+            body = JSON.stringify({
+                token: `${testCaseUUID}`
+            })
+        }
+        console.log("Rrecording API call :: ", body)
         try {
             const response = await fetch(endpoint, {
-                method: 'GET',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: body,
             });
-
             if (response.ok) {
-                const responseData = await response.json();
-                console.log("Long polling res :: ", responseData);
+                const responseData = await response.json()
                 if (responseData.message != 'Timeout') {
                     const message = responseData.message;
-                    const elements: TestCaseElement[] = [];
-                    for (const menu of message.menu.elements) {
-                        elements.push(
-                            new TestCaseElement(
-                                menu.index,
-                                menu["resource-id"],
+                    const menuList: Menu[] = [];
+                    for (const menu of message.menu) {
+                        menu.actions.push("Enter Text");
+                        menuList.push(
+                            new Menu(
+                                menu.type,
                                 menu.class,
+                                menu.name,
                                 menu.title,
-                                menu["content-desc"],
+                                menu["resource-id"],
+                                menu.label,
+                                menu.enabled,
+                                menu.visible,
+                                menu.accessible,
+                                menu.x,
+                                menu.y,
+                                menu.width,
+                                menu.height,
+                                menu.index,
+                                menu.clickable,
+                                menu.xpath,
                                 menu.actions
                             )
                         );
@@ -208,7 +242,7 @@ class ApiClient {
                         message.screenshot_url,
                         message.xml_url,
                         message.receiverMessage || '',
-                        new Menu(elements)
+                        menuList
                     );
                 } else {
                     return null
@@ -223,4 +257,4 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient(`http://172.19.9.111:3000`, "v1");
+export const apiClient = new ApiClient(`http://localhost:3000`, "v1");

@@ -8,12 +8,20 @@ const nextConfig: NextConfig = {
         hostname: 'terrablob.uberinternal.com',
       },
       {
-        protocol: 'http',
-        hostname: '192.168.68.109'
+        protocol: 'https',
+        hostname: 'terrablob-gateway.uberinternal.com',
       },
       {
         protocol: 'http',
-        hostname: '172.19.10.55'
+        hostname: '192.168.68.102'
+      },
+      {
+        protocol: 'http',
+        hostname: '172.19.2.209'
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost'
       }
     ],
   },
