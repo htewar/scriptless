@@ -14,8 +14,14 @@ git clone git@github.com:htewar/scriptless.git
 2. Download docker desktop from [Link](https://docs.docker.com/desktop/setup/install/mac-install/)
 3. Once project cloned, open it in IDE like VS code and WebStrom.
 4. Open buit-in terminal of IDE and run below commands
-    - `npm install` To install all the project dependencies.
-    - `docker compose up` To set-up database environment. (One time only)
+    - To install all the project dependencies.
+   ```sh
+   npm install
+   ```
+    - To setup database environment. (One time only)
+   ```sh
+   docker compose up
+   ```
 5. Once docker compose done, just make sure service started from docker app.
 6. To run project, run command `npm run dev`
 
