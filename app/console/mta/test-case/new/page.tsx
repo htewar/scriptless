@@ -228,6 +228,7 @@ export default function AddNewTestCaseScreen() {
                                                 placeholder="Method name"
                                                 disabled={isLoading}
                                                 type="string" {...field}
+                                                autoComplete="off"
                                                 onChangeCapture={targetValue => {
                                                     setMethodName(targetValue.currentTarget.value)
                                                     setErrorMessage(null)
