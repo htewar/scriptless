@@ -7,7 +7,7 @@ import {useParams, useRouter} from "next/navigation";
 import {apiClient} from "@/app/lib/api/apiClient";
 import Cookies from "js-cookie";
 import FullScreenSyncLoader from "@/app/lib/ui/components/FullScreenSyncLoader";
-import {Video} from "lucide-react";
+import {RefreshCw, Video} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Separator} from "@/components/ui/separator";
 import {Menu, RecordingTestCaseApiResponse} from "@/app/lib/models/RecordingTestCaseApiResponse";
@@ -91,6 +91,29 @@ export default function RecordTestCase() {
     function previewTestCase() {
     }
 
+    async function onRefreshClick() {
+        const actionBody = {
+            "action_type": "refresh",
+            "param_value": "",
+            "class": "",
+            "name": "",
+            "title": "",
+            "resource-id": "",
+            "label": "",
+            "enabled": false,
+            "visible": false,
+            "xpath": ""
+        }
+        setTestCaseElement(null)
+        setScreenShotUrl(null)
+        const response = await startRecording(actionBody)
+        if (response) {
+            setTestCaseElement(response)
+            setIsLoading(false)
+            setScreenShotUrl(`${response.screenshotUrl}?cache-bust=${key}`)
+        }
+    }
+
     async function saveTestCase() {
         const actionBody = {
             action_type: "exit",
@@ -140,6 +163,7 @@ export default function RecordTestCase() {
                         screenshotUrl={screenShotUrl}
                         menu={testCaseElement?.menu || []}
                         onPreviewTestCaseClick={previewTestCase}
+                        onRefreshClick={onRefreshClick}
                         isRecordingLoading={isLoading}
                         onSaveTestCaseClick={saveTestCase}
                         onOptionSelect={(menu: Menu, action: string, input: string | null) => {
@@ -165,6 +189,7 @@ interface RecordingTestCaseScreenProp {
     screenshotUrl: string | null,
     menu: Menu[] | [],
     onPreviewTestCaseClick: () => void,
+    onRefreshClick: () => void,
     isRecordingLoading: boolean,
     onSaveTestCaseClick: () => void,
     onOptionSelect: (menu: Menu, action: string, input: string | null) => void
@@ -177,6 +202,7 @@ function RecordingTestCaseScreen(
         screenshotUrl,
         menu,
         onPreviewTestCaseClick,
+        onRefreshClick,
         isRecordingLoading,
         onSaveTestCaseClick,
         onOptionSelect
@@ -207,14 +233,20 @@ function RecordingTestCaseScreen(
                 {
                     isRecordingLoading ? <FullScreenSyncLoader/> : <>
                         <div className="flex-1">
-                            {menu.length === 0 &&
-                                <div className="flex items-center justify-center h-full">
-                                    No elements found.
+                            {/*{menu.length === 0 &&*/}
+                            {/*    <div className="flex items-center justify-center h-full">*/}
+                            {/*        No elements found.*/}
+                            {/*    </div>*/}
+                            {/*}*/}
+                            <div className="h-full w-full pt-8 flex flex-col items-start gap-2">
+                                <div className="flex gap-3 items-start justify-center mb-4">
+                                    <h2 className="font-medium text-xl">Select Element:</h2>
+                                    <Button className="-mt-1" onClick={() => onRefreshClick()}>
+                                        <RefreshCw/>
+                                        Refresh
+                                    </Button>
                                 </div>
-                            }
-                            {(menu.length > 0) &&
-                                <div className="h-full w-full pt-8 flex flex-col items-start gap-2">
-                                    <h2 className="font-medium text-xl mb-4">Select Element:</h2>
+                                {(menu.length > 0) &&
                                     <div
                                         className="w-full h-full overflow-y-auto no-scrollbar flex flex-col items-start gap-2">
                                         {
@@ -232,8 +264,8 @@ function RecordingTestCaseScreen(
                                             })
                                         }
                                     </div>
-                                </div>
-                            }
+                                }
+                            </div>
                         </div>
                         <div className=" flex-1 h-full w-full flex items-center justify-center">
                             {screenshotUrl &&

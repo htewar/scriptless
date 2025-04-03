@@ -46,7 +46,7 @@ export default function TriggerNewTestCase() {
     })
     return (
         <>
-            <Metadata seoTitle="Trigger Test Case | Script less" seoDescription="Trigger Test Case" />
+            <Metadata seoTitle="Trigger Test Case | Scriptless" seoDescription="Trigger Test Case"/>
             <div className="h-full w-full flex items-center justify-center">
                 <div className="border border-primary py-4 w-[500] px-20 rounded-lg">
                     <h1 className="text-2xl font-bold text-center">Trigger Test Case</h1>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Script Less",
-  description: "Script less automation tool",
+  title: "Scriptless",
+  description: "Scriptless automation tool",
 };
 
 export default function RootLayout({

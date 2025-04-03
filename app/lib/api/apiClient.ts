@@ -257,4 +257,4 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient(`http://localhost:3000`, "v1");
+export const apiClient = new ApiClient(`http://172.19.10.51:3000`, "v1");

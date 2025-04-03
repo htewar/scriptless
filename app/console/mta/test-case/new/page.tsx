@@ -150,7 +150,7 @@ export default function AddNewTestCaseScreen() {
 
     return (
         <>
-            <Metadata seoTitle="Create Test Case | Script less" seoDescription="Create New Test Case" />
+            <Metadata seoTitle="Create Test Case | Scriptless" seoDescription="Create New Test Case"/>
             <div className="h-full w-full flex items-center justify-center">
                 <div className="border border-primary py-4 w-[500] px-20 rounded-lg">
                     <h1 className="text-2xl font-bold text-center">Create New Test Case</h1>

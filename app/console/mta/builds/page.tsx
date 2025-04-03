@@ -71,7 +71,7 @@ export default function BuildsPage() {
 
     return (
         <>
-            <Metadata seoTitle="Builds | ScriptLess" seoDescription=""/>
+            <Metadata seoTitle="Builds | Scriptless" seoDescription=""/>
             <div className="h-full w-full overflow-y-auto no-scrollbar">
                 <div className="max-w-4xl h-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
                     <div className="flex justify-between items-center mb-2">

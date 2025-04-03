@@ -39,7 +39,7 @@ export default function LoginForm({ onSubmitForm, isLoading, errorMessage, onFor
     })
     return (
         <>
-            <Metadata seoTitle="SignIn | Script less" seoDescription="Login to your account" />
+            <Metadata seoTitle="SignIn | Scriptless" seoDescription="Login to your account"/>
             <div>
                 <div>
                     <div className="absolute z-10 left-0 top-0 h-screen w-screen">

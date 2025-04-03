@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Minimum Required configured versions for project
 
-## Getting Started
+- Node: 23.7.0
+- NPM: 11.1.0
+- Docker: 28.0.1
 
-First, run the development server:
+## Project Setup steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. clone the project by using command `git clone git@github.com:htewar/scriptless.git`
+2. Download docker desktop from [Link](https://docs.docker.com/desktop/setup/install/mac-install/)
+3. Once project cloned, open it in IDE like VS code and WebStrom.
+4. Open buit-in terminal of IDE and run below commands
+    - `npm install` To install all the project dependencies.
+    - `docker compose up` To set-up database environment. (One time only)
+5. Once docker compose done, just make sure service started from docker app.
+6. To run project, run command `npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> Note: Required to create .env file in root directory of project and add below properties in .env file.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+HOST=<Your IP addrees>
+MYSQL_ROOT_PASSWORD=<DB Root Password>
+MYSQL_DATABASE=<DB Name>
+MYSQL_USER=<DB Username>
+MYSQL_PASSWORD=<DB password>
+``` 

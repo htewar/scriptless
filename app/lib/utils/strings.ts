@@ -1,3 +1,3 @@
 export const Strings = {
-    AppName: "ScriptLess",
+    AppName: "Scriptless",
 }
