@@ -30,6 +30,7 @@ export class Menu {
     title: string
     resourceId: string
     label: string
+    contentDesc: string
     enabled: boolean
     visible: boolean
     accessible: boolean
@@ -49,6 +50,7 @@ export class Menu {
         title: string,
         resourceId: string,
         label: string,
+        contentDesc: string,
         enabled: boolean,
         visible: boolean,
         accessible: boolean,
@@ -67,6 +69,7 @@ export class Menu {
         this.title = title
         this.resourceId = resourceId
         this.label = label
+        this.contentDesc = contentDesc
         this.enabled = enabled
         this.visible = visible
         this.accessible = accessible
