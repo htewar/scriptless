@@ -39,7 +39,7 @@ export function ElementItemView(
                 <DropdownMenuTrigger>
                     <div className="px-2 py-1 rounded border border-accent-foreground w-[320px]">
                         <p className="w-full break-words">
-                            {`${menu.label ? menu.label : menu.title ? menu.title : menu.resourceId ? menu.resourceId : menu.classType ? menu.classType : menu.name ? menu.name : menu.type}`}
+                            {`${menu.label ? menu.label : menu.title ? menu.title : menu.contentDesc ? menu.contentDesc : menu.resourceId ? menu.resourceId : menu.classType ? menu.classType : menu.name ? menu.name : menu.type}`}
                         </p>
                     </div>
                 </DropdownMenuTrigger>

@@ -209,11 +209,20 @@ class ApiClient {
             });
             if (response.ok) {
                 const responseData = await response.json()
+                console.log("Rrecording API RESPONSE :: ", responseData)
                 if (responseData.message != 'Timeout') {
                     const message = responseData.message;
                     const menuList: Menu[] = [];
                     for (const menu of message.menu) {
-                        menu.actions.push("Enter Text");
+                        const menuActions: string[] = [];
+                        if (menu.clickable) {
+                            menuActions.push("Click");
+                        }
+                        if (menu.scrollable) {
+                            menuActions.push("Scroll Up");
+                            menuActions.push("Scroll Bottom");
+                        }
+                        menuActions.push("Enter Text");
                         menuList.push(
                             new Menu(
                                 menu.type,
@@ -222,6 +231,7 @@ class ApiClient {
                                 menu.title,
                                 menu["resource-id"],
                                 menu.label,
+                                menu["content-desc"],
                                 menu.enabled,
                                 menu.visible,
                                 menu.accessible,
@@ -232,17 +242,43 @@ class ApiClient {
                                 menu.index,
                                 menu.clickable,
                                 menu.xpath,
-                                menu.actions
+                                menuActions
                             )
                         );
                     }
+                    menuList.sort((a, b) => {
+                        const aHasContentDesc = a.title?.trim() !== '';
+                        const bHasContentDesc = b.title?.trim() !== '';
+
+                        if (aHasContentDesc && !bHasContentDesc) {
+                            return -1;
+                        } else if (!aHasContentDesc && bHasContentDesc) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    });
+                    const filteredMenuList = menuList.filter(menu => {
+                        return !menu.resourceId?.includes('com.android.systemui');
+                    });
+                    // const uniqueContentDesc = new Set<string>();
+                    // const filteredMenuList = menuList.filter(menu => {
+                    //     if (menu.contentDesc && !uniqueContentDesc.has(menu.contentDesc)) {
+                    //         uniqueContentDesc.add(menu.contentDesc);
+                    //         return true;
+                    //     } else if (menu.contentDesc && (menu.resourceId || menu.title)) {
+                    //         return true;
+                    //     }
+                    //     return false;
+                    // });
+                    // menuList.reverse()
                     return new RecordingTestCaseApiResponse(
                         responseData.client_id,
                         uid,
                         message.screenshot_url,
                         message.xml_url,
                         message.receiverMessage || '',
-                        menuList
+                        filteredMenuList
                     );
                 } else {
                     return null
@@ -257,4 +293,4 @@ class ApiClient {
     }
 }
 
-export const apiClient = new ApiClient(`http://172.19.10.51:3000`, "v1");
+export const apiClient = new ApiClient(`http://172.19.156.103:3000`, "v1");

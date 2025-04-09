@@ -42,7 +42,7 @@ export default function RecordTestCase() {
         xpath: string
     }) => {
         setIsLoading(true)
-        refreshImage()
+        // refreshImage()
         try {
             const response = await apiClient.recording(uid, testCase?.testCaseUUID as string, action)
             console.log("Recording Response :: ", response)
@@ -62,7 +62,7 @@ export default function RecordTestCase() {
             }
             setUid(uid)
             setIsLoading(true)
-            refreshImage()
+            // refreshImage()
             fetchTestCase(uid, id as string).then((response: TestCaseApiResponse) => {
                 setIsLoading(false)
                 if (!response.isError) {
@@ -135,13 +135,15 @@ export default function RecordTestCase() {
             "param_value": input || "",
             "class": menu.type || menu.classType,
             "name": menu.name,
-            "title": menu.title,
+            "text": menu.title,
             "resource-id": menu.resourceId,
+            "content-desc": menu.contentDesc,
             "label": menu.label,
             "enabled": menu.enabled,
             "visible": menu.visible,
             "xpath": menu.xpath
         }
+        refreshImage()
         setTestCaseElement(null)
         setScreenShotUrl(null)
         const response = await startRecording(actionBody)
@@ -168,8 +170,12 @@ export default function RecordTestCase() {
                         onSaveTestCaseClick={saveTestCase}
                         onOptionSelect={(menu: Menu, action: string, input: string | null) => {
                             let inputAction: string
-                            if (action === "clickable")
+                            if (action === "Click")
                                 inputAction = "click"
+                            else if (action === "Scroll Up")
+                                inputAction = "scroll_up"
+                            else if (action === "Scroll Bottom")
+                                inputAction = "scroll_bottom"
                             else
                                 inputAction = action
                             console.log("Menu Selected :: ", menu, action)
