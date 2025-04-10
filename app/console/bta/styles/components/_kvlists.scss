@@ -1,0 +1,47 @@
+.kvlists {
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 1rem 0rem;
+    }
+
+    &__input {
+        >* {
+            &:not(:first-child) {
+                margin-top: .5rem;
+            }
+        }
+
+        margin-bottom: 1rem;
+    }
+
+    &__button {
+        width: 100% !important;
+    }
+
+    &__lists {
+        display: flex;
+        margin-bottom: .5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    &__box {
+        min-width: 4.5rem;
+        padding: 1px 6.5px;
+        display: inline-block;
+        cursor: pointer;
+        word-wrap: break-word;
+
+        &--enabled {
+            border: 1px solid $color-primary;
+            background-color: #E6F2FF;
+        }
+
+        &--disabled {
+            border: 1px solid $color-grey-dark;
+            background-color: #e8e8e8;
+        }
+    }
+}

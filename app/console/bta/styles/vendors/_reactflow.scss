@@ -1,0 +1,9 @@
+.react-flow {
+    background: $color-white;
+
+    &__panel {
+        > a {
+            display: none;
+        }
+    }
+}

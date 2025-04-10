@@ -1,0 +1,27 @@
+.switch {
+    width: 3.5rem;
+    height: 1.8rem;
+    background-color: #27AE60;
+    border-radius: 4.8rem;
+    position: relative;
+    padding: 1.4px;
+    cursor: pointer;
+    &--inactive {
+        background-color: #B1B1B1;
+    }
+    &__slider {
+        background: $color-white;
+        height: 1.5rem;
+        width: 1.5rem;
+        border-radius: 50%;
+        position: absolute;
+        transition: transform 0.3s ease, left 0.3s ease;
+        &--left {
+          left: 2px;
+        }
+
+        &--right {
+            left: calc(3.5rem - 1.5rem - .2rem);
+        }
+    }
+}

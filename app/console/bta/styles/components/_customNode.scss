@@ -1,0 +1,78 @@
+.customNode {
+
+    &__contents {
+        min-width: 24.3rem;
+        border-radius: 1rem;
+        border: 3px solid #d9d9d9;
+        overflow: hidden;
+        background-color: #fff;
+
+        &--current {
+            border: 3px solid steelblue;
+        }
+    }
+
+    &__header {
+        width: 100%;
+        height: 2.2rem;
+        background-color: #E6F2FF;
+        display: flex;
+        align-items: center;
+        padding: .5rem 1rem;
+
+        >* {
+            &:not(:first-child) {
+                margin-left: .5rem;
+            }
+        }
+    }
+
+    &__action {
+        width: 1.5rem;
+        height: 1.2rem;
+    }
+
+    &__body {
+        padding: .6rem 1rem 1rem 1rem;
+
+        &--details {
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            cursor: pointer;
+            &:hover {
+                text-decoration: underline;
+            }
+
+            >* {
+                &:not(:first-child) {
+                    margin-left: .5rem;
+                }
+            }
+        }
+
+        &--status {
+            @include displayBetween;
+            margin-top: .5rem;
+        }
+    }
+
+    &__statusDetails {
+        height: 1.6rem;
+        padding: 4px 6px;
+        @include displayCenter;
+
+        &--idle {
+            background-color: #d9d9d9;
+        }
+
+        &--processing{
+            background: #EC9706;
+        }
+
+        &--success {
+            background: #27AE60;
+        }
+    }
+
+}

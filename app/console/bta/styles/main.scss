@@ -1,0 +1,85 @@
+@font-face {
+    font-family: "public-sans-bold";
+    src: url("../utils/fonts/public-sans/PublicSans-Bold.otf");
+}
+
+@font-face {
+    font-family: "public-sans-light";
+    src: url("../utils/fonts/public-sans/PublicSans-Light.otf");
+}
+
+@font-face {
+    font-family: "public-sans-regular";
+    src: url("../utils/fonts/public-sans/PublicSans-Regular.otf");
+}
+
+@font-face {
+    font-family: "inter-bold";
+    src: url("../utils/fonts/inter/Inter-Bold.otf");
+}
+
+@font-face {
+    font-family: "inter-bold";
+    src: url("../utils/fonts/inter/Inter-Regular.otf");
+}
+
+@font-face {
+    font-family: "inter-medium";
+    src: url("../utils/fonts/inter/Inter-Medium.otf");
+}
+
+@font-face {
+    font-family: "inter-light";
+    src: url("../utils/fonts/inter/Inter-Light-BETA.otf");
+}
+
+@font-face {
+    font-family: "inter-semi-bold";
+    src: url("../utils/fonts/inter/Inter-SemiBold.otf");
+}
+
+@font-face {
+    font-family: "inter-black";
+    src: url("../utils/fonts/inter/Inter-Black.otf");
+}
+
+@font-face {
+    font-family: "inter-regular";
+    src: url("../utils/fonts/inter/Inter-Regular.otf");
+}
+
+@font-face {
+    font-family: "inter-italic";
+    src: url("../utils/fonts/inter/Inter-Italic.otf");
+}
+
+
+@import "./abstracts/variables";
+@import "./abstracts/functions";
+@import "./abstracts/mixins";
+
+@import "./base/animations";
+@import "./base/base";
+@import "./base/typography";
+@import "./base/utilities";
+
+@import "./components/button";
+@import "./components/customNode";
+@import "./components/template";
+@import "./components/node";
+@import "./components/form";
+@import "./components/switch";
+@import "./components/kvlists";
+@import './components/popup';
+@import "./components/selective-input";
+@import "./components/status-indicator";
+@import "./components/upload-container";
+
+@import "./layout/header";
+@import "./layout/grid";
+@import "./layout/loader";
+@import "./layout/message";
+
+@import "./pages/template";
+
+@import "./vendors/reactflow";

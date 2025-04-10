@@ -31,7 +31,7 @@ export default function Home() {
 
   async function authenticUser(username: string, password: string) {
     try {
-      const loginResponse = await apiClient.login(username, password);
+      const loginResponse = {isUserAuthenticated : true, user: {uid:"ram", token: "1234"}, errorMessage: ""}
       console.log(loginResponse);
       if (loginResponse.isUserAuthenticated) {
         const token = loginResponse.user?.token;

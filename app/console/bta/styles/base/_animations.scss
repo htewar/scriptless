@@ -1,0 +1,25 @@
+@keyframes panelBottomToTop {
+    0% {
+      bottom: -27rem;
+      opacity: 0;
+    }
+  
+    100% {
+      bottom: 0;
+      opacity: 1;
+    }
+  }
+
+  @keyframes panelTopToBottom {
+    0% {
+      bottom: 0rem;
+      opacity: 1;
+      display: block;
+    }
+  
+    100% {
+      bottom: -27rem;
+      opacity: 0;
+      display: none;
+    }
+  }

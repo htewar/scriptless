@@ -1,0 +1,131 @@
+body {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: $default-font-size;
+  line-height: 1.7;
+  color: $color-grey-dark;
+}
+
+.title {
+  color: $color-grey-dark;
+  font-size: 1.8rem;
+  font-family: "poppins-regular";
+  display: inline-block;
+
+  &--psb-18 {
+    font-family: 'public-sans-bold';
+  }
+
+  &--ib-14-1 {
+    font-family: 'inter-bold';
+    font-size: 1.4rem;
+    color: #474141;
+  }
+
+  &--isb-12-1 {
+    font-family: "inter-semi-bold";
+    font-size: 1.2rem;
+    color: #474141;
+  }
+
+  &--isb-12-2 {
+    font-family: "inter-semi-bold";
+    font-size: 1.2rem;
+    color: $color-white;
+  }
+
+  &--isb-14-1 {
+    font-family: "inter-semi-bold";
+    font-size: 1.4rem;
+    color: $color-primary;
+  }
+
+  &--isb-9-1 {
+    font-family: "inter-semi-bold";
+    font-size: .9rem;
+    color: $color-primary;
+  }
+
+  &--isb-9-2 {
+    font-family: "inter-semi-bold";
+    font-size: .9rem;
+    color: $color-grey-dark;
+  }
+
+  &--ibl-7-1 {
+    font-family: "inter-black";
+    font-size: .7rem;
+    color: $color-white;
+  }
+
+  &--ibl-14-1 {
+    font-family: "inter-black";
+    font-size: 1.4rem;
+    color: #474747;
+  }
+}
+
+.text {
+  font-size: 1.8rem;
+  color: $color-grey-dark;
+  font-family: "inter-regular";
+  display: inline-block;
+
+  &--ir-14-1 {
+    font-size: 1.4rem;
+  }
+
+  &--ib-10-1 {
+    font-family: "inter-bold";
+    font-size: 1rem;
+    color: #474141;
+  }
+
+  &--im-14-1 {
+    font-family: "inter-medium";
+    font-size: 1.4rem;
+    color: $color-black;
+  }
+
+  &--psl-14-1 {
+    font-family: 'public-sans-light';
+    font-size: 1.4rem;
+    color: $color-grey-light-2;
+  }
+
+  &--psl-14-2 {
+    font-family: 'public-sans-light';
+    font-size: 1.4rem;
+    color: $color-black;
+  }
+
+  &--ir-10-1 {
+    font-family: "inter-regular";
+    font-size: 1rem;
+    color: #474141;
+  }
+
+  &--ir-18-1 {
+    font-family: "inter-regular";
+    font-size: 1.8rem;
+    color: $color-black;
+  }
+
+  &--ir-18-1 {
+    font-family: "inter-regular";
+    font-size: 1.8rem;
+    color: #474141;
+  }
+
+  &--ib-8-1 {
+    font-family: "inter-bold";
+    font-size: .8rem;
+    color: #CA003F;
+  }
+
+  &--ii-10-1 {
+    font-family: "inter-italic";
+    font-size: 1rem;
+    color: #888888;
+  }
+}

@@ -1,0 +1,15 @@
+.upload-container {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #EAEAEA;
+    border: 1px dashed #ADADAD;
+    border-radius: .5rem;
+
+    &__textwidth {
+        max-width: 20rem;
+        text-align: center;
+    }
+}

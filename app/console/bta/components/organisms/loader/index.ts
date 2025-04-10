@@ -1,0 +1,1 @@
+export { BarberPole } from './barber-pole';

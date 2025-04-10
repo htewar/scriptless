@@ -18,7 +18,7 @@ const ConsolePlatforms = [
         name: "Backend Test Automation",
         icon: "/backend.svg",
         iconSize: "w-12 h-12",
-        slug: "backend",
+        slug: "bta",
     },
     {
         name: "Web Test Automation",

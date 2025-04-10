@@ -1,0 +1,33 @@
+@mixin clearfix {
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+  }
+  
+  @mixin absCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  @mixin fixedCenter {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  @mixin displayCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @mixin displayBetween {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
