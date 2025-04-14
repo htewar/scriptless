@@ -34,3 +34,7 @@ MYSQL_DATABASE=<DB Name>
 MYSQL_USER=<DB Username>
 MYSQL_PASSWORD=<DB password>
 ``` 
+
+BTA Specific Instructions
+Add the below line in .env file
+GOOGLE_GENERATIVE_AI_API_KEY=<Gemini API key>
