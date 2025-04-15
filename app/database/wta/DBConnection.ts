@@ -235,15 +235,17 @@ class DBConnection {
     private async syncTestCaseModel() {
         TestCase.init(
             {
+                uid: {
+                    type: DataTypes.INTEGER, //auto increment for unique id
+                    allowNull: false,
+                },
                 test_case_uuid: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.STRING,   //using v4
                     allowNull: false,
                     primaryKey: true,
+                    unique: true,
                 },
-                uid: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                },
+                
                 test_case_name: {
                     type: DataTypes.STRING,
                     allowNull: false,
@@ -256,7 +258,7 @@ class DBConnection {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
-                config_path: {
+                config_file: {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
@@ -264,14 +266,19 @@ class DBConnection {
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
+                environment: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
             },
             {
                 sequelize,
                 tableName: 'test_case',
+                timestamps : true,
             }
         )
-        User.hasMany(TestCase, {foreignKey: 'uid'});
-        TestCase.belongsTo(User, {foreignKey: 'uid'});
+        // User.hasMany(TestCase, {foreignKey: 'uid'});
+        // TestCase.belongsTo(User, {foreignKey: 'uid'});
         await TestCase.sync({alter: true})
     }
 
@@ -279,9 +286,9 @@ class DBConnection {
         User.init(
             {
                 uid: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
+                    type: DataTypes.INTEGER,
                     primaryKey: true,
+                    allowNull: false,
                 },
                 username: {
                     type: DataTypes.STRING,

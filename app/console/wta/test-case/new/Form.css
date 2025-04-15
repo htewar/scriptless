@@ -1,0 +1,122 @@
+/* Style for the form container */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-color: #f7fafc; /* Light background color */
+  }
+  
+  /* Style for the form box */
+  .form-box {
+    border: 1px solid black; /* Thin border */
+    padding: 20px 60px 20px 60px;
+    width: 400px; /* Set a width for the form */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f7fafc; /* White background for the form */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0); /* Subtle shadow */
+  }
+  
+  /* Style for the form title */
+  .form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Style for each form field */
+  .form-field {
+    margin-bottom: 16px;
+  }
+  
+  /* Style for the labels */
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+  }
+  
+  /* Style for the input fields */
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .form-input:focus {
+    border-color: #007BFF; /* Change border color on focus */
+    outline: none;
+  }
+  
+  /* Style for the submit button */
+  .form-submit {
+    text-align: center;
+  }
+  
+  .form-button {
+    padding: 10px 20px;
+    background-color: black; /* Blue background */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  .custom-file-input {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  /* Hiding the default file input */
+  .file-input {
+    display: none; /* Hide the default file input */
+    cursor: pointer;
+    position: absolute; /* Position it over the label */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+  
+  /* Styling the file input label to match other input fields */
+  .file-label {
+    display: inline-block;
+    width: 100%;
+    padding: 10px; /* Matches padding of the other input fields */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+    height: 40px; /* Adjust to ensure it matches other input fields */
+    line-height: 20px; /* Align text vertically inside the field */
+    overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Show ellipsis (...) for overflow text */
+  white-space: nowrap;
+  font-weight: bold;
+  }
+  
+  .file-label:hover {
+    background-color: #f1f1f1;
+  }
+  .error {
+    color: red;
+    font-size: 12px;
+  }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isNullOrEmpty } from "@/app/lib/utils/utils";
-import DBConnection from "@/app/database/mta/DBConnection";
-import User from "@/app/database/mta/models/User";
+import DBConnection from "@/app/database/wta/DBConnection";
+import User from "@/app/database/wta/models/User";
 
 export async function POST(request: NextRequest) {
     const formData = await request.formData();

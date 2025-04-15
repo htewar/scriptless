@@ -1,0 +1,121 @@
+/* General container styling */
+.container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Data List */
+  .data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between rows */
+  }
+  
+  /* Data Row (Each item) */
+  .data-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    display: flex; /* Flex container for each row */
+    justify-content: flex-start; /* Align items to the left */
+    align-items: center; /* Align items vertically */
+    background-color: #f9f9f9;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    width: 100%; /* Ensure the container stretches full width */
+    overflow: hidden; /* Hide overflowed content */
+  }
+  
+  /* Data content (icon, name, feature, result) */
+  .data-content {
+    display: flex; /* Flexbox container for horizontal alignment */
+    width: 100%;
+    justify-content: flex-start; /* Align all items to the left */
+    align-items: center; /* Align items vertically */
+  }
+  
+  /* Chrome Icon field (10% width) */
+  .icon {
+    flex: 0 0 10%; /* 10% for Chrome icon */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #007bff;
+  }
+  
+  /* Name field (30% width) */
+  .data-name {
+    flex: 0 0 30%; /* 30% for name */
+    font-weight: bold;
+    font-size: 16px;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+    
+  }
+  .data-name:hover::after {
+    content: attr(data-tooltip); /* The tooltip text will be taken from the "data-tooltip" attribute */
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: max-content; /* Let the tooltip expand based on content length */
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark background */
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: normal; /* Allow multi-line text in tooltip */
+    z-index: 1000; /* Make sure the tooltip is on top of other content */
+    opacity: 0; /* Initially hidden */
+    visibility: hidden; /* Initially hidden */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .data-name:hover::after {
+    opacity: 1; /* Show the tooltip when hovering */
+    visibility: visible; /* Make the tooltip visible */
+  }
+  
+  /* Feature button (40% width) */
+  .data-feature-button {
+    flex: 0 0 40%; /* 40% for feature button */
+    background-color: white;
+    color: black;
+    border: 2px solid black;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+  }
+  
+  .data-feature-button:hover {
+    background-color: lightgrey;
+  }
+  
+  /* Result field (20% width) */
+  .data-result {
+    flex: 0 0 20%; /* 20% for result */
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+  }
+  
+  /* Styles for result values (Pass/Fail) */
+  .data-result.pass {
+    color: green;
+  }
+  
+  .data-result.fail {
+    color: red;
+  }
+  
+  

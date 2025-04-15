@@ -1,11 +1,11 @@
 import { Model } from 'sequelize'
 
 class User extends Model {
-    declare uid: string;
+    declare uid: number;
     declare username: string;
     declare token: string;
 
-    static async createUser(uid: string, username: string, token: string) {
+    static async createUser(uid: number, username: string, token: string) {
         try {
             return await User.create({ uid, username, token });
         } catch (error) {
@@ -13,8 +13,9 @@ class User extends Model {
         }
     }
 
-    static async getUserByID(uid: string) {
+    static async getUserByID(uid: number) {
         try {
+            console.log("entry");
             return await User.findByPk(uid);
         } catch (error) {
             throw error;
