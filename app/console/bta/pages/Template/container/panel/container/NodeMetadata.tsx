@@ -47,6 +47,7 @@ const NodeMetadata: FC<NodeMetadataProps> = ({
     return <div className="template__nodemetadata">
         <div className="template__params">
             {selectedNode?.data.status == NodeStatus.INITIATING && <UploadContainer onHandleAddNodeFileData={onAddNodeFileData} />}
+            <a href="https://www.google.com">google</a>
             <div className="u-margin-top-10">
                 <InputGroup
                     title="Node Name"
