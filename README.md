@@ -38,3 +38,8 @@ MYSQL_PASSWORD=<DB password>
 BTA Specific Instructions
 Add the below line in .env file
 GOOGLE_GENERATIVE_AI_API_KEY=<Gemini API key>
+
+brew install redis
+To stop Redis: brew services stop redis
+To restart Redis: brew services restart redis
+To check Redis status: brew services info redis
