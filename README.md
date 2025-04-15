@@ -35,11 +35,16 @@ MYSQL_USER=<DB Username>
 MYSQL_PASSWORD=<DB password>
 ``` 
 
-BTA Specific Instructions
+BTA Specific Instructions:
+```
 Add the below line in .env file
 GOOGLE_GENERATIVE_AI_API_KEY=<Gemini API key>
 
-brew install redis
+brew install redis -> one time installation required
+Start redis using this command- "brew services start redis"
+
+Some other usefull commands
 To stop Redis: brew services stop redis
 To restart Redis: brew services restart redis
 To check Redis status: brew services info redis
+```
