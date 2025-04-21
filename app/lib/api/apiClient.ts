@@ -6,6 +6,7 @@ import TestCasesApiResponse, {
 import LoginApiResponse, {User} from "@/app/lib/models/LoginApiResponse";
 import {Build, GetBuildsApiResponse} from "@/app/lib/models/GetBuildsApiResponse";
 import {Menu, RecordingTestCaseApiResponse} from "@/app/lib/models/RecordingTestCaseApiResponse";
+import { setTimeout } from "timers/promises";
 
 class ApiClient {
     private readonly baseUrl: string;
@@ -177,16 +178,16 @@ class ApiClient {
     }
 
     async recording(uid: string, testCaseUUID: string, action?: {
-        action_type: string;
-        param_value: string;
-        class: string;
-        name: string;
-        label: string;
-        enabled: boolean;
-        visible: boolean;
-        xpath: string
+        action_type: string | null;
+        param_value: string | null;
+        class: string | null;
+        name: string | null;
+        label: string | null;
+        enabled: boolean| null;
+        visible: boolean| null;
+        xpath: string | null;
     } | undefined): Promise<RecordingTestCaseApiResponse | null> {
-        const endpoint = `http://localhost:7777/record/step/listen`;
+        const endpoint = `http://localhost:8018/record/step/listen`;
         let body: string
         if (action) {
             body = JSON.stringify({
@@ -207,6 +208,7 @@ class ApiClient {
                 },
                 body: body,
             });
+            console.log("Rrecording API RESPONSE :: ", response)
             if (response.ok) {
                 const responseData = await response.json()
                 console.log("Rrecording API RESPONSE :: ", responseData)
@@ -261,24 +263,14 @@ class ApiClient {
                     const filteredMenuList = menuList.filter(menu => {
                         return !menu.resourceId?.includes('com.android.systemui');
                     });
-                    // const uniqueContentDesc = new Set<string>();
-                    // const filteredMenuList = menuList.filter(menu => {
-                    //     if (menu.contentDesc && !uniqueContentDesc.has(menu.contentDesc)) {
-                    //         uniqueContentDesc.add(menu.contentDesc);
-                    //         return true;
-                    //     } else if (menu.contentDesc && (menu.resourceId || menu.title)) {
-                    //         return true;
-                    //     }
-                    //     return false;
-                    // });
-                    // menuList.reverse()
                     return new RecordingTestCaseApiResponse(
                         responseData.client_id,
                         uid,
                         message.screenshot_url,
                         message.xml_url,
                         message.receiverMessage || '',
-                        filteredMenuList
+                        filteredMenuList,
+                        responseData['step_uuid']
                     );
                 } else {
                     return null
@@ -291,6 +283,13 @@ class ApiClient {
             return null
         }
     }
+
+    async runUtility(): Promise<string|null> {
+        await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 2000);
+        });
+        return "http://localhost:7777/get_blob_file?file_name=/prod/personal/avaish12/localization_output.pdf";
+    }       
 }
 
-export const apiClient = new ApiClient(`http://172.19.156.103:3000`, "v1");
+export const apiClient = new ApiClient(`http://localhost:3000`, "v1");

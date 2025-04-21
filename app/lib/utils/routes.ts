@@ -9,4 +9,5 @@ export const RoutePaths = {
     Recording: (platform: string, id: string) => `${Console}/${platform}/${TestCase}/${id}/record`,
     Trigger: (platform: string, id: string) => `${Console}/${platform}/${TestCase}/trigger/${id}`,
     Builds: (platform: string) => `${Console}/${platform}/builds`,
+    Utilities: (platform: string) => `${Console}/${platform}/utilities`,
 }

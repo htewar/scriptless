@@ -4,6 +4,7 @@ export class RecordingTestCaseApiResponse {
     screenshotUrl: string
     xmlUrl: string
     receiverMessage: string
+    stepUUID: string
     menu: Menu[]
 
     constructor(
@@ -12,7 +13,8 @@ export class RecordingTestCaseApiResponse {
         screenshotUrl: string,
         xmlUrl: string,
         receiverMessage: string,
-        menu: Menu[]
+        menu: Menu[],
+        stepUUID: string
     ) {
         this.senderId = senderId
         this.receiverId = receiverId
@@ -20,6 +22,7 @@ export class RecordingTestCaseApiResponse {
         this.xmlUrl = xmlUrl
         this.receiverMessage = receiverMessage
         this.menu = menu
+        this.stepUUID = stepUUID
     }
 }
 
