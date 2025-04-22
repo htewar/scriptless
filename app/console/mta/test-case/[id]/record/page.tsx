@@ -33,7 +33,12 @@ export default function RecordTestCase() {
   const [initialLoad, setInitialLoad] = useState<boolean>(true);
   const [key, setKey] = useState(1);
   const refreshImage = () => setKey((prev) => prev + 1);
-  const [stepUUID, setStepUUID] = useState<string | null>(null);
+  const [stepUUID, setStepUUID] = useState<string>("");
+
+  // Add useEffect to track stepUUID changes
+  useEffect(() => {
+    console.log("stepUUID updated to:", stepUUID);
+  }, [stepUUID]);
 
   const fetchTestCase = useCallback(async (uid: string, id: string) => {
     return await apiClient.getTestCase(uid, id);
@@ -49,13 +54,14 @@ export default function RecordTestCase() {
       enabled: boolean | null;
       visible: boolean | null;
       xpath: string | null;
-    }) => {
+    },) => {
       setIsLoading(true);
-      // refreshImage()
+      console.log("Current stepUUID in startRecording:", stepUUID);
       try {
         const response = await apiClient.recording(
           uid,
           testCase?.testCaseUUID as string,
+          stepUUID,
           action
         );
         console.log("Recording Response :: ", response);
@@ -66,7 +72,7 @@ export default function RecordTestCase() {
         console.error("Error during recording: ", error);
       }
     },
-    [testCase?.testCaseUUID, uid]
+    [testCase?.testCaseUUID, uid, stepUUID] // Add stepUUID to dependencies
   );
 
   useEffect(() => {
@@ -92,22 +98,15 @@ export default function RecordTestCase() {
       startRecording().then(
         (recordingApiResponse: RecordingTestCaseApiResponse | undefined) => {
           if (recordingApiResponse instanceof RecordingTestCaseApiResponse) {
+            const newStepUUID = recordingApiResponse.stepUUID;
+            console.log("Setting new stepUUID:", newStepUUID);
+            setStepUUID(newStepUUID);
             setTestCaseElement(recordingApiResponse);
-            setStepUUID(recordingApiResponse.stepUUID);
             setScreenShotUrl(
               `${recordingApiResponse.screenshotUrl}?cache-bust=${key}`
             );
             setInitialLoad(false);
             setIsLoading(false);
-            console.log(
-              "RecordingTestCaseApiResponse:: ",
-              recordingApiResponse
-            );
-          } else {
-            console.log(
-              "testCaseElement(Assigned) :: Something wrong",
-              recordingApiResponse
-            );
           }
         }
       );
@@ -130,13 +129,13 @@ export default function RecordTestCase() {
       xpath: null,
     };
     refreshImage();
-    setTestCaseElement(null);
+    // setTestCaseElement(null);
     setScreenShotUrl(null);
     const response = await startRecording(actionBody);
     if (response) {
       setTestCaseElement(response);
-      setIsLoading(false);
       setStepUUID(response.stepUUID);
+      setIsLoading(false);
       setScreenShotUrl(`${response.screenshotUrl}?cache-bust=${key}`);
     }
   }
@@ -180,9 +179,9 @@ export default function RecordTestCase() {
     if (response) {
       refreshImage();
       setTestCaseElement(response);
+      setStepUUID(response.stepUUID);
       setIsLoading(false);
       setScreenShotUrl(`${response.screenshotUrl}?cache-bust=${key}`);
-      setStepUUID(response.stepUUID);
     }
   };
   return (

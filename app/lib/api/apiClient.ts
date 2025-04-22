@@ -177,7 +177,7 @@ class ApiClient {
         }
     }
 
-    async recording(uid: string, testCaseUUID: string, action?: {
+    async recording(uid: string, testCaseUUID: string, stepUUID: string | null, action?: {
         action_type: string | null;
         param_value: string | null;
         class: string | null;
@@ -187,12 +187,14 @@ class ApiClient {
         visible: boolean| null;
         xpath: string | null;
     } | undefined): Promise<RecordingTestCaseApiResponse | null> {
-        const endpoint = `http://localhost:8018/record/step/listen`;
+        const endpoint = `http://172.23.131.48:8018/record/step/listen`;
+        console.log("STEP UUID (API CALL) :: ", stepUUID)
         let body: string
         if (action) {
             body = JSON.stringify({
                 token: `${testCaseUUID}`,
                 action: action,
+                step_uuid: stepUUID
             })
         } else {
             body = JSON.stringify({
@@ -211,9 +213,9 @@ class ApiClient {
             console.log("Rrecording API RESPONSE :: ", response)
             if (response.ok) {
                 const responseData = await response.json()
-                console.log("Rrecording API RESPONSE :: ", responseData)
                 if (responseData.message != 'Timeout') {
                     const message = responseData.message;
+                    const stepUUID = message.step_uuid;
                     const menuList: Menu[] = [];
                     for (const menu of message.menu) {
                         const menuActions: string[] = [];
@@ -270,7 +272,7 @@ class ApiClient {
                         message.xml_url,
                         message.receiverMessage || '',
                         filteredMenuList,
-                        responseData['step_uuid']
+                        stepUUID
                     );
                 } else {
                     return null
