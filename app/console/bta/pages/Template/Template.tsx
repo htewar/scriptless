@@ -1,7 +1,7 @@
 import { DndProvider } from "react-dnd";
 import { Draft, OutputPanel, Panel } from "./container";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { ReactFlowProvider } from "reactflow";
+import { ReactFlowProvider, Node, Edge } from "reactflow";
 import { FC, useEffect, useState } from "react";
 import { BarberPole, Icon } from "../../components";
 import { connect } from "react-redux";
@@ -9,6 +9,7 @@ import { RootState } from "../../types";
 import { Dispatch } from "redux";
 import { setDraftLoader, toggleTerminalDisplay } from "../../redux/actions/utils.action";
 import Chat from "../../components/organisms/chat/Chat";
+import FlowPreviewModal from "../../components/organisms/chat/FlowPreviewModal";
 
 interface TemplateProps {
     showOPPanel: boolean,
@@ -18,6 +19,8 @@ interface TemplateProps {
 
 const Template: FC<TemplateProps> = ({ showOPPanel, loader, dispatch }) => {
     const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);
+    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+    const [previewData, setPreviewData] = useState<{ nodes: Node[], edges: Edge[] } | null>(null);
 
     useEffect(() => {
         dispatch(setDraftLoader({ loader: false }))
@@ -68,10 +71,24 @@ const Template: FC<TemplateProps> = ({ showOPPanel, loader, dispatch }) => {
                     </div>
                 </div>
                 <div className="flex-1 overflow-hidden">
-                    <Chat />
+                    <Chat
+                        onPreview={(nodes: Node[], edges: Edge[]) => {
+                            setPreviewData({ nodes, edges });
+                            setIsPreviewModalOpen(true);
+                        }}
+                    />
                 </div>
             </div>
         </div>
+
+        {isPreviewModalOpen && previewData && (
+            <FlowPreviewModal
+                isOpen={isPreviewModalOpen}
+                onClose={() => setIsPreviewModalOpen(false)}
+                nodes={previewData.nodes}
+                edges={previewData.edges}
+            />
+        )}
     </section>
 }
 

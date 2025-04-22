@@ -3,12 +3,40 @@
 import { useChat, type Message } from '@ai-sdk/react'
 import { useRef, useState, useEffect, DragEvent } from 'react';
 import { FaPaperclip, FaTrashAlt, FaFilePdf, FaFileAlt } from 'react-icons/fa';
-import { BsStars } from "react-icons/bs";
+import { RiRobot3Line } from "react-icons/ri";
 import { FiSend, FiStopCircle } from 'react-icons/fi';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus as syntaxTheme } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import type { Node, Edge } from 'reactflow'; // Import React Flow types
+import FlowPreviewModal from './FlowPreviewModal'; // Import the modal component
+
+// Local storage key for persisting messages
+const LOCAL_STORAGE_KEY = 'bta-chat-messages';
+
+// Helper function to load messages from local storage
+function loadMessagesFromStorage(): Message[] {
+  if (typeof window === 'undefined') {
+    return []; // Return empty array during server-side rendering or build
+  }
+  try {
+    const storedMessages = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (storedMessages) {
+      const parsedMessages = JSON.parse(storedMessages);
+      // Basic validation: check if it's an array
+      if (Array.isArray(parsedMessages)) {
+        // TODO: Add more robust validation for message structure if needed
+        return parsedMessages as Message[];
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load messages from localStorage:", error);
+    // Optional: Clear invalid data from storage
+    // localStorage.removeItem(LOCAL_STORAGE_KEY);
+  }
+  return []; // Return empty array if nothing found or error
+}
 
 function TypingIndicator() {
   return (
@@ -53,14 +81,24 @@ function TextFilePreview({ file }: { file: File }) {
   );
 }
 
-export default function Chat() {
+interface ChatProps {
+  onPreview: (nodes: Node[], edges: Edge[]) => void;
+}
+
+export default function Chat({ onPreview }: ChatProps) {
+  // Load initial messages from local storage *once* on component mount
+  const [initialMessages] = useState<Message[]>(() => loadMessagesFromStorage());
+
   const { messages, setMessages, input, handleInputChange, handleSubmit, isLoading, stop, addToolResult } = useChat({
-    api: '/api/v1/bta/chat'
+    api: '/api/v1/bta/chat',
+    initialMessages: initialMessages, // Use messages loaded from storage
   });
   const [files, setFiles] = useState<FileList | undefined>(undefined);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false); // State for modal visibility
+  const [previewData, setPreviewData] = useState<{ nodes: Node[], edges: Edge[] } | null>(null); // State for modal data
 
   const handleDelete = (id: string) => {
     setMessages(messages.filter((message) => message.id !== id));
@@ -75,8 +113,27 @@ export default function Chat() {
     console.log('Messages changed:', messages);
   }, [messages]);
 
+  // Effect to save messages to localStorage whenever they change
   useEffect(() => {
-    // Add a welcome message on load
+    // Only save if there are messages and localStorage is available
+    if (messages.length > 0 && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(messages));
+      } catch (error) {
+        console.error("Failed to save messages to localStorage:", error);
+        toast.error('Could not save chat history.');
+      }
+    }
+    // Optional: Clear storage if messages become empty (e.g., user deletes all)
+    // else if (messages.length === 0 && typeof window !== 'undefined') {
+    //   localStorage.removeItem(LOCAL_STORAGE_KEY);
+    // }
+  }, [messages]);
+
+  // Add effect to monitor message changes (for debugging)
+  useEffect(() => {
+    // Add a welcome message only if there are no messages after initialization
+    // (i.e., nothing was loaded from storage)
     if (messages.length === 0) {
       setMessages([
         {
@@ -86,7 +143,9 @@ export default function Chat() {
         },
       ]);
     }
-  }, [setMessages, messages.length]);
+    // This effect should conceptually run once after initial state is determined.
+    // Depending on messages.length achieves this. setMessages is included for linting.
+  }, [messages.length, setMessages]);
 
   // Drag & Drop Handlers
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
@@ -114,6 +173,24 @@ export default function Chat() {
       setFiles(dataTransfer.files);
     } else {
       toast.error('Only .txt, .pdf, or .json files are allowed!');
+    }
+  };
+
+  // Handler for the preview button
+  const handlePreviewClick = (jsonData: any) => {
+    try {
+      const parsedData = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+
+      if (parsedData && Array.isArray(parsedData.nodes)) {
+        const edges = Array.isArray(parsedData.edges) ? parsedData.edges : [];
+        onPreview(parsedData.nodes, edges);
+      } else {
+        console.error("Invalid JSON structure for flow preview: Missing or invalid nodes array.", parsedData);
+        toast.error("Cannot preview flow: Invalid JSON data structure. Missing or invalid nodes array.");
+      }
+    } catch (error) {
+      console.error("Error processing JSON for preview:", error);
+      toast.error(`Cannot preview flow: Error processing JSON data. ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -148,7 +225,7 @@ export default function Chat() {
               >
                 {!isUser && (
                   <div className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
-                    <BsStars className="text-purple-700" size={20} />
+                    <RiRobot3Line size={20} />
                   </div>
                 )}
 
@@ -257,17 +334,53 @@ export default function Chat() {
                                  const state = 'state' in toolInvocation ? toolInvocation.state : 'unknown';
                                  return <div key={toolCallId} className="text-sm text-red-600 italic">Error: Test suite data missing for tool '{toolName}' in state '{state}'.</div>;
                                }
+
                                return (
-                                 <div key={toolCallId} className="mt-2 relative bg-gray-800 rounded-md overflow-hidden">
-                                   <SyntaxHighlighter
-                                     language="json"
-                                     style={syntaxTheme}
-                                     customStyle={{ maxHeight: '300px', overflowY: 'auto', margin: 0, padding: '0.75rem', fontSize: '0.9rem' }}
-                                     PreTag="div"
-                                     className="rounded-md"
-                                   >
-                                     {JSON.stringify(testSuiteData, null, 2)}
-                                   </SyntaxHighlighter>
+                                 <div key={toolCallId} className="mt-2 relative">
+                                   <div className="bg-gray-800 rounded-md overflow-hidden">
+                                     <SyntaxHighlighter
+                                       language="json"
+                                       style={syntaxTheme}
+                                       customStyle={{ maxHeight: '300px', overflowY: 'auto', margin: 0, padding: '0.75rem', fontSize: '0.9rem' }}
+                                       PreTag="div"
+                                       className="rounded-md"
+                                     >
+                                       {JSON.stringify(testSuiteData, null, 2)}
+                                     </SyntaxHighlighter>
+                                     <button
+                                       className="absolute top-2 right-2 px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-medium z-10"
+                                       onClick={() => handlePreviewClick(testSuiteData)}
+                                       aria-label="Preview Flow"
+                                     >
+                                       Preview Flow
+                                     </button>
+                                   </div>
+                                   
+                                   {/* Confirmation Buttons */}
+                                   <div className="mt-3 flex gap-2 justify-end">
+                                     <button
+                                       className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm font-medium"
+                                       onClick={() => {
+                                         addToolResult({
+                                           toolCallId: toolCallId,
+                                           result: 'Yes, preview looks good.',
+                                         });
+                                       }}
+                                     >
+                                       Looks Good
+                                     </button>
+                                     <button
+                                       className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded text-sm font-medium"
+                                       onClick={() => {
+                                         addToolResult({
+                                           toolCallId: toolCallId,
+                                           result: 'No, wait. I need to provide more details.',
+                                         });
+                                       }}
+                                     >
+                                       Cancel
+                                     </button>
+                                   </div>
                                  </div>
                                );
                              }
@@ -311,7 +424,7 @@ export default function Chat() {
             >
                <div className="flex">
                 <div className="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
-                   <BsStars className={`${isLoading ? 'animate-pulse text-purple-600' : ''}`} size={20} />
+                   <RiRobot3Line className={`${isLoading ? 'animate-pulse' : ''}`} size={20} />
                  </div>
                 <div className="p-3 rounded-xl bg-white text-gray-800 border border-gray-200 rounded-bl-none shadow-sm flex items-center">
                   <TypingIndicator />
@@ -320,6 +433,16 @@ export default function Chat() {
             </motion.div>
           )}
         </div>
+
+        {/* Add the FlowPreviewModal component here */}
+        {isPreviewModalOpen && previewData && (
+          <FlowPreviewModal
+            isOpen={isPreviewModalOpen}
+            onClose={() => setIsPreviewModalOpen(false)}
+            nodes={previewData.nodes}
+            edges={previewData.edges}
+          />
+        )}
 
         <div className="bg-gray-50 border-t border-gray-200">
           <div className="max-w-4xl mx-auto px-4 md:px-6 py-3">

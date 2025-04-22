@@ -3,6 +3,7 @@
 import { createOllama } from 'ollama-ai-provider'; // Keep if you might use it
 import { createOpenAI } from '@ai-sdk/openai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { streamText, tool } from 'ai';
 import { z } from 'zod'; // Import Zod
 
@@ -53,25 +54,6 @@ const SYSTEM_PROMPT = `
      - **Invoke the 'display_json_output' tool** with the generated JSON object as the argument. The argument name should be 'testSuite'.
      - After invoking the 'display_json_output' tool, provide a polite closing message (e.g., "Here is the generated JSON configuration. Let me know if you have any questions.") as a normal text message in the stream.
 
-  6. **JSON Format:**
-       \`\`\`json
-      {
-        "testSuiteName": "Name of the test suite",
-        "workflow": [
-          {
-            "name": "Step 1 Description",
-            "url": "API endpoint URL",
-            "method": "GET/POST/PUT/DELETE",
-            "headers": { "header-name": "header-value" }, // Optional
-            "payload": { "key": "value" }, // Optional
-            "responseAssertions": ["Assertion 1", "Assertion 2"],
-            "next": "Step 2 Description" // Optional, if there's a sequence
-          },
-          // ... more steps
-        ]
-      }
-      \`\`\`
-
   **Important Reminders:**
 
   - Be POLITE and HELPFUL throughout the conversation.
@@ -121,26 +103,36 @@ const openai = createOpenAI({
     "rpc-caller": "ctf-code-review-bot",
     "x-vercel-ai-data-stream": "v1"
   },
-  compatibility: 'strict',
+  compatibility: 'compatible',
+});
+
+const openaiprovider = createOpenAICompatible({
+  name: 'openaiprovider',
+  baseURL: 'http://localhost:5436/v1',
+  apiKey: '2ac395c1-4a97-430f-847a-0bee75e522b3',
+  headers: {
+    "Content-Type": "application/json",
+    "openai-organization": "2ac395c1-4a97-430f-847a-0bee75e522b3",
+    "rpc-service": "genai-api",
+    "rpc-caller": "ctf-code-review-bot",
+    'X-Vercel-AI-Data-Stream': 'v1',
+  },
 });
 
 const google = createGoogleGenerativeAI();
 const ollama = createOllama();
 
-
 export async function POST(req: Request) {
   const { messages } = await req.json();
-  //console.log("Received messages:", JSON.stringify(messages, null, 2));
-
   try {
     const result = await streamText({
-      //model: openai('gpt-4o'),
-      model: google('models/gemini-2.0-flash'), // Use a specific, available model name
-      toolCallStreaming: true,
+      //model: openaiprovider('gpt-4.1-nano'),
+      model: openai('gpt-4.1-nano'),
+      //model: google('models/gemini-2.0-flash'), // Use a specific, available model name
       system: SYSTEM_PROMPT,
       messages,
+      maxSteps: 3,
       tools: {
-        // --- Tool using Zod Schema ---
         request_json_generation_confirmation: tool({
           description: 'Asks the user via the UI to confirm if the AI should proceed with generating the JSON test suite configuration.',
           parameters: z.object({
@@ -153,13 +145,16 @@ export async function POST(req: Request) {
             testSuite: testSuiteSchema
           }),
         })
+      },
+      async onFinish({ response }) {
+        console.log("onFinish responseMessages", JSON.stringify(response, null, 2));
+      },
+      async onError({ error }) {
+        console.log("onError error", JSON.stringify(error, null, 2));
       }
     });
 
-    return result.toDataStreamResponse({
-      getErrorMessage: errorHandler,
-    });
-
+    return result.toDataStreamResponse();
   } catch (error) {
     console.error("Error in POST handler:", error);
     // Improved error handling to potentially capture ZodErrors
@@ -183,27 +178,4 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-}
-
-// --- errorHandler remains the same ---
-export function errorHandler(error: unknown) {
-  if (error == null) {
-    return 'unknown error';
-  }
-
-  if (typeof error === 'string') {
-    return error;
-  }
-
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  // Special handling for Zod errors if they reach here (though caught above)
-  if (error instanceof z.ZodError) {
-    return `Schema validation error: ${error.errors.map(e => `${e.path.join('.')} - ${e.message}`).join(', ')}`;
-  }
-
-  console.log("Unknown error stringified:", JSON.stringify(error))
-  return JSON.stringify(error);
 }
