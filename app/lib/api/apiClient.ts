@@ -187,7 +187,7 @@ class ApiClient {
         visible: boolean| null;
         xpath: string | null;
     } | undefined): Promise<RecordingTestCaseApiResponse | null> {
-        const endpoint = `http://172.23.131.48:8018/record/step/listen`;
+        const endpoint = `http://localhost:8018/record/step/listen`;
         console.log("STEP UUID (API CALL) :: ", stepUUID)
         let body: string
         if (action) {
@@ -227,6 +227,20 @@ class ApiClient {
                             menuActions.push("Scroll Bottom");
                         }
                         menuActions.push("Enter Text");
+
+                        // Parse bounds to get x, y, width, height
+                        const bounds = menu.bounds || "";
+                        const match = bounds.match(/\[(\d+),(\d+)\]\[(\d+),(\d+)\]/);
+                        let x = 0, y = 0, width = 0, height = 0;
+                        
+                        if (match) {
+                            const [_, x1, y1, x2, y2] = match;
+                            x = parseInt(x1);
+                            y = parseInt(y1);
+                            width = parseInt(x2) - parseInt(x1);
+                            height = parseInt(y2) - parseInt(y1);
+                        }
+
                         menuList.push(
                             new Menu(
                                 menu.type,
@@ -239,14 +253,15 @@ class ApiClient {
                                 menu.enabled,
                                 menu.visible,
                                 menu.accessible,
-                                menu.x,
-                                menu.y,
-                                menu.width,
-                                menu.height,
+                                x,
+                                y,
+                                width,
+                                height,
                                 menu.index,
                                 menu.clickable,
                                 menu.xpath,
-                                menuActions
+                                menuActions,
+                                bounds // Add bounds to the Menu object
                             )
                         );
                     }
@@ -272,7 +287,8 @@ class ApiClient {
                         message.xml_url,
                         message.receiverMessage || '',
                         filteredMenuList,
-                        stepUUID
+                        stepUUID,
+                        message.screenshot_dimensions || { width: 1344, height: 2992 }
                     );
                 } else {
                     return null

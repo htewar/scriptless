@@ -20,6 +20,7 @@ import {
 import Image from "next/image";
 import { ElementItemView } from "@/app/lib/ui/components/ScreenElementItemView";
 import { RoutePaths } from "@/app/lib/utils/routes";
+import DeviceScreenUI from "@/app/lib/ui/components/DeviceScreenUI";
 
 export default function RecordTestCase() {
   const router = useRouter();
@@ -164,14 +165,14 @@ export default function RecordTestCase() {
       action_type: action,
       param_value: input || null,
       class: menu.type || menu.classType,
-      name: menu.name?.length > 0 ? menu.name : null,
-      text: menu.title?.length > 0 ? menu.title : null,
+      name: menu.name ? menu.name : null,
+      text: menu.title ? menu.title : null,
       "resource-id": menu.resourceId,
-      "content-desc": menu.contentDesc?.length > 0 ? menu.contentDesc : null,
-      label: menu.label?.length > 0 ? menu.label : null,
+      "content-desc": menu.contentDesc ? menu.contentDesc : null,
+      label: menu.label ? menu.label : null,
       enabled: menu.enabled,
       visible: menu.visible,
-      xpath: menu.xpath?.length > 0 ? menu.xpath : null,
+      xpath: menu.xpath ? menu.xpath : null,
     };
     refreshImage();
     setScreenShotUrl(null);
@@ -216,6 +217,7 @@ export default function RecordTestCase() {
               console.log("Menu Selected :: ", menu, action);
               recordStep(menu, inputAction, input).then(() => {});
             }}
+            screenshotDimensions={testCaseElement?.screenshotDimensions || { width: 1344, height: 2992 }}
           />
         )}
       </div>
@@ -233,6 +235,7 @@ interface RecordingTestCaseScreenProp {
   isRecordingLoading: boolean;
   onSaveTestCaseClick: () => void;
   onOptionSelect: (menu: Menu, action: string, input: string | null) => void;
+  screenshotDimensions: { width: number; height: number };
 }
 
 function RecordingTestCaseScreen({
@@ -245,7 +248,22 @@ function RecordingTestCaseScreen({
   isRecordingLoading,
   onSaveTestCaseClick,
   onOptionSelect,
+  screenshotDimensions,
 }: RecordingTestCaseScreenProp) {
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+
+  const handleMenuHover = (menu: Menu | null, index: number) => {
+    setHighlightedIndex(index);
+  };
+
+  const handleMenuClick = (menu: Menu, action: string) => {
+    onOptionSelect(menu, action, null);
+  };
+
+  const handleElementHover = (index: number) => {
+    setHighlightedIndex(index);
+  };
+
   return (
     <div className={"w-full h-full max-w-4xl mx-auto pt-4 flex flex-col"}>
       <div className={"flex items-center justify-between mb-2"}>
@@ -276,11 +294,6 @@ function RecordingTestCaseScreen({
         ) : (
           <>
             <div className="flex-1">
-              {/*{menu.length === 0 &&*/}
-              {/*    <div className="flex items-center justify-center h-full">*/}
-              {/*        No elements found.*/}
-              {/*    </div>*/}
-              {/*}*/}
               <div className="h-full w-full pt-8 flex flex-col items-start gap-2">
                 <div className="flex gap-3 items-start justify-center mb-4">
                   <h2 className="font-medium text-xl">Select Element:</h2>
@@ -297,6 +310,7 @@ function RecordingTestCaseScreen({
                           key={index}
                           index={index}
                           menu={element}
+                          isHighlighted={index === highlightedIndex}
                           onOptionSelect={(
                             menu: Menu,
                             action: string,
@@ -304,6 +318,7 @@ function RecordingTestCaseScreen({
                           ) => {
                             onOptionSelect(menu, action, input);
                           }}
+                          onHover={handleElementHover}
                         />
                       );
                     })}
@@ -311,16 +326,15 @@ function RecordingTestCaseScreen({
                 )}
               </div>
             </div>
-            <div className=" flex-1 h-full w-full flex items-center justify-center">
+            <div className="flex-1 h-full w-full flex items-center justify-center">
               {screenshotUrl && (
-                <Image
-                  src={screenshotUrl}
-                  key={uniqekey}
-                  alt={testCase.testCaseName}
-                  width={360}
-                  height={780}
-                  unoptimized
-                  className="border-8 border-gray-700 rounded-[24] shadow-md"
+                <DeviceScreenUI
+                  screenshotUrl={screenshotUrl}
+                  menuList={menu}
+                  onMenuHover={handleMenuHover}
+                  onMenuClick={handleMenuClick}
+                  highlightedIndex={highlightedIndex}
+                  screenshotDimensions={screenshotDimensions}
                 />
               )}
             </div>

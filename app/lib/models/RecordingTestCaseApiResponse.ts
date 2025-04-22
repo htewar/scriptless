@@ -1,88 +1,36 @@
 export class RecordingTestCaseApiResponse {
-    senderId: string
-    receiverId: string
-    screenshotUrl: string
-    xmlUrl: string
-    receiverMessage: string
-    stepUUID: string
-    menu: Menu[]
-
     constructor(
-        senderId: string,
-        receiverId: string,
-        screenshotUrl: string,
-        xmlUrl: string,
-        receiverMessage: string,
-        menu: Menu[],
-        stepUUID: string
-    ) {
-        this.senderId = senderId
-        this.receiverId = receiverId
-        this.screenshotUrl = screenshotUrl
-        this.xmlUrl = xmlUrl
-        this.receiverMessage = receiverMessage
-        this.menu = menu
-        this.stepUUID = stepUUID
-    }
+        public clientId: string,
+        public uid: string,
+        public screenshotUrl: string,
+        public xmlUrl: string,
+        public receiverMessage: string,
+        public menu: Menu[],
+        public stepUUID: string,
+        public screenshotDimensions: { width: number; height: number }
+    ) {}
 }
 
 export class Menu {
-    type: string
-    classType: string
-    name: string
-    title: string
-    resourceId: string
-    label: string
-    contentDesc: string
-    enabled: boolean
-    visible: boolean
-    accessible: boolean
-    x: string
-    y: string
-    width: string
-    height: string
-    index: string
-    clickable: boolean
-    xpath: string
-    actions: string[]
-
     constructor(
-        type: string,
-        classType: string,
-        name: string,
-        title: string,
-        resourceId: string,
-        label: string,
-        contentDesc: string,
-        enabled: boolean,
-        visible: boolean,
-        accessible: boolean,
-        x: string,
-        y: string,
-        width: string,
-        height: string,
-        index: string,
-        clickable: boolean,
-        xpath: string,
-        actions: string[]
-    ) {
-        this.type = type
-        this.classType = classType
-        this.name = name
-        this.title = title
-        this.resourceId = resourceId
-        this.label = label
-        this.contentDesc = contentDesc
-        this.enabled = enabled
-        this.visible = visible
-        this.accessible = accessible
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = height
-        this.index = index
-        this.clickable = clickable
-        this.xpath = xpath
-        this.actions = actions
-    }
+        public type: string,
+        public classType: string,
+        public name: string | null,
+        public title: string | null,
+        public resourceId: string | null,
+        public label: string | null,
+        public contentDesc: string | null,
+        public enabled: boolean,
+        public visible: boolean,
+        public accessible: boolean,
+        public x: number,
+        public y: number,
+        public width: number,
+        public height: number,
+        public index: number,
+        public clickable: boolean,
+        public xpath: string | null,
+        public actions: string[],
+        public bounds: string | null = null
+    ) {}
 }

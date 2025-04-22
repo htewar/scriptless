@@ -5,7 +5,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Menu} from "@/app/lib/models/RecordingTestCaseApiResponse";
-import {useState} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -13,18 +13,20 @@ import {Input} from "@/components/ui/input";
 interface ElementItemViewProp {
     index: number
     menu: Menu,
+    isHighlighted: boolean,
     onOptionSelect: (menu: Menu, action: string, input: string | null) => void
+    onHover: (index: number) => void
 }
 
 export function ElementItemView(
-    {index, menu, onOptionSelect}: ElementItemViewProp
+    {index, menu, isHighlighted, onOptionSelect, onHover}: ElementItemViewProp
 ) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
+    const elementRef = useRef<HTMLDivElement>(null);
 
     const handleInputSelect = () => {
         setIsDialogOpen(true);
-        // onOptionSelect(menu, action, inputValue);
     };
 
     const handleContinue = () => {
@@ -33,11 +35,29 @@ export function ElementItemView(
         setInputValue('');
     };
 
+    useEffect(() => {
+        if (isHighlighted && elementRef.current) {
+            elementRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }
+    }, [isHighlighted]);
+
     return (
         <>
             <DropdownMenu key={index}>
                 <DropdownMenuTrigger>
-                    <div className="px-2 py-1 rounded border border-accent-foreground w-[320px]">
+                    <div 
+                        ref={elementRef}
+                        className={`px-2 py-1 rounded border w-[320px] transition-colors ${
+                            isHighlighted 
+                                ? 'border-blue-700 bg-blue-500/20' 
+                                : 'border-accent-foreground'
+                        }`}
+                        onMouseEnter={() => onHover(index)}
+                        onMouseLeave={() => onHover(-1)}
+                    >
                         <p className="w-full break-words">
                             {`${menu.label ? menu.label : menu.title ? menu.title : menu.contentDesc ? menu.contentDesc : menu.resourceId ? menu.resourceId : menu.classType ? menu.classType : menu.name ? menu.name : menu.type}`}
                         </p>
