@@ -22,14 +22,6 @@ const Popup:FC<PopupProps> = ({
     }
   };
 
-  const child = Children.map(children, (child) =>
-    isValidElement(child)
-      ? cloneElement(child as ReactElement<{ onHandleClose: () => void }>, { onHandleClose })
-      : child
-  );
-  
-  
-
   return (
     <div className="popup" onClick={onHandleClose}>
       <div
@@ -47,7 +39,7 @@ const Popup:FC<PopupProps> = ({
         <div className="popup__close" onClick={onHandleClose}>
           <Icon name="Close" />
         </div>
-        <div className="popup__container">{child}</div>
+        <div className="popup__container">{children}</div>
       </div>
     </div>
   );

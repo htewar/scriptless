@@ -54,7 +54,6 @@ const Header: FC<HeaderProps> = ({ dispatch, nodes }) => {
                     contents={nodes || []}
                     location="data.label"
                     variant={InputGroupVariant.Primary}
-                    value={startNode ? startNode : ""}
                     onHandleDropdown={onHandleSetStartNode}
                     className="header__popupInput"
                     filter={false}
