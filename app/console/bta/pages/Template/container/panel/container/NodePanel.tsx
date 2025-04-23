@@ -305,6 +305,50 @@ const NodePanel: FC<NodePanelProps> = ({ dispatch, isCurrentSelection, currentNo
         })
     }
 
+    // Handler to update node state atomically from parsed cURL data
+    const handleUpdateNodeFromCurl = (data: { url: string; method: string; queryParams: KeyValueProps[]; headers: KeyValueProps[] }) => {
+        setSelectedNode(prevState => {
+            if (!prevState) return null;
+
+            // Validate the incoming method
+            const validMethods = Object.values(HTTPMethod); // Get valid methods from enum
+            const validatedMethod = validMethods.includes(data.method as HTTPMethod) 
+                ? data.method as HTTPMethod 
+                : HTTPMethod.GET; // Default to GET if invalid
+
+            const newMetadata: Partial<MetadataState> = {
+                url: data.url,
+                method: validatedMethod, // Use the validated method
+                params: data.queryParams,
+                headers: data.headers,
+            };
+
+            // Reset body based on method
+            if (validatedMethod === HTTPMethod.GET) {
+                newMetadata.bodyType = BODYTYPE.NONE;
+                newMetadata.body = "";
+            } else {
+                // Default to NONE, could be enhanced later if cURL parsing includes body
+                newMetadata.bodyType = BODYTYPE.NONE;
+                newMetadata.body = "";
+            }
+
+            return {
+                ...prevState,
+                data: {
+                    ...prevState.data, // Preserve label, status, assertion, etc.
+                    metadata: {
+                        ...prevState.data.metadata ?? {},
+                        ...newMetadata // Overwrite relevant metadata fields
+                    }
+                }
+            } as Node<CustomNodeData>;
+        });
+
+        // Optionally, trigger UI updates handled locally in NodeMetadata (like enabling sections)
+        // This might require passing back info or letting NodeMetadata derive from selectedNode prop
+    };
+
     // This function will insert a new mapper to the component state management
     const insertMapper = (mapper: PreRequestAssertionProps) => {
         const currentNode = JSON.parse(JSON.stringify(selectedNode)) as Node<CustomNodeData>
@@ -429,6 +473,7 @@ const NodePanel: FC<NodePanelProps> = ({ dispatch, isCurrentSelection, currentNo
             onHandlePredecessorEdge={onHandlePredecessorEdge}
             onDeleteURLEncodedParam={onDeleteURLEncodedParam}
             selectedNode={selectedNode}
+            onUpdateNodeFromCurl={handleUpdateNodeFromCurl}
         />}
         {isCurrentSelection(SELECTIONS.ASSERTIONS) &&
             <Assertion

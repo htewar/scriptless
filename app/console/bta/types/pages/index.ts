@@ -30,6 +30,11 @@ export type NodeMetadataProps = {
     onDeleteHeaderParam: (index: number) => void;
     onDeleteURLEncodedParam: (index: number) => void;
     onHandlePredecessorEdge: (node: DropdownFnParams<Node<CustomNodeData>>) => void;
+    onClearQueryParams?: () => void;
+    onClearHeaderParams?: () => void;
+    onSetQueryParams?: (params: KeyValueProps[]) => void;
+    onSetHeaderParams?: (headers: KeyValueProps[]) => void;
+    onUpdateNodeFromCurl?: (data: { url: string; method: string; queryParams: KeyValueProps[]; headers: KeyValueProps[] }) => void;
 }
 
 export type NodeParams = {
