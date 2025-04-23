@@ -140,4 +140,4 @@ export default function DeviceScreenUI({
       </div>
     </div>
   );
-} 
+}

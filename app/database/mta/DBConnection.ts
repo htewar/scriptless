@@ -95,6 +95,145 @@ class DBConnection {
         })
     }
 
+    private async syncTestCaseExecutionModel() {
+        TestCaseExecution.init(
+            {
+                execution_uuId: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    primaryKey: true,
+                },
+                test_case_uuid: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                uid: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                target_os: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                target_device: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                device_lab: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+            },
+            {
+                sequelize,
+                tableName: 'test_case_execution',
+            }
+        )
+        User.hasMany(TestCaseExecution, {foreignKey: 'uid'});
+        TestCaseExecution.belongsTo(User, {foreignKey: 'uid'});
+        TestCase.hasMany(TestCaseExecution, {foreignKey: 'test_case_uuid'});
+        TestCaseExecution.belongsTo(TestCase, {foreignKey: 'test_case_uuid'});
+        await TestCaseExecution.sync({
+            alter: true
+        })
+    }
+
+    private async syncPlaySessionModel() {
+        PlaySession.init(
+            {
+                playing_token: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    primaryKey: true,
+                },
+                uid: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                recording_token: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                steps: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+            },
+            {
+                sequelize,
+                tableName: 'play_session',
+            }
+        )
+        User.hasMany(PlaySession, {foreignKey: 'uid'});
+        PlaySession.belongsTo(User, {foreignKey: 'uid'});
+        TestCase.hasMany(PlaySession, {foreignKey: 'test_case_uuid'});
+        PlaySession.belongsTo(TestCase, {foreignKey: 'test_case_uuid'});
+        await PlaySession.sync({
+            alter: true
+        })
+    }
+
+    private async syncIndividualStepModel() {
+        IndividualStep.init(
+            {
+                steps_uuid: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    primaryKey: true,
+                },
+                bounds: {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                },
+                img_screens: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                xml_hierarchy: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                screen_id: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                order: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                },
+                test_case_uuid: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                action: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                optionals: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                screen_name: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                order_id: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                },
+            },
+            {
+                sequelize,
+                tableName: 'individual_step',
+            }
+        )
+        TestCase.hasMany(IndividualStep, {foreignKey: 'test_case_uuid'});
+        IndividualStep.belongsTo(TestCase, {foreignKey: 'test_case_uuid'});
+        await IndividualStep.sync({
+            alter: true
+        })
+    }
+
     private async syncTestCaseModel() {
         TestCase.init(
             {
