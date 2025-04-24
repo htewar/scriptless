@@ -17,7 +17,7 @@ export default function TestCaseItemView(
             <div className='flex items-center space-x-6 justify-between border rounded-lg px-4 border-black/30 py-2'>
                 <div className='flex items-center space-x-4'>
                     <div>
-                        {testCase.platform === 'android' ? (
+                        {testCase.platform.toLowerCase() === 'android' ? (
                             <Image src="/android-logo.svg" alt="Android" width={18} height={18} />
                         ) : (
                             <Image src="/apple-logo.svg" alt="iOS" width={16} height={16} />

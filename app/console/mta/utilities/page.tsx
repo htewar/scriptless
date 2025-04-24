@@ -21,6 +21,13 @@ import { Label } from "@/components/ui/label";
 import { apiClient } from "@/app/lib/api/apiClient";
 import { BeatLoader } from "react-spinners";
 import PDFViewer from "@/app/lib/ui/components/PDFViewer";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   teraBlobPath: z.string(),
@@ -31,10 +38,13 @@ interface Utility {
 }
 
 const utilities: Utility[] = [
-  { name: "Translation" },
   { name: "Truncation" },
+  { name: "Overlap" },
   { name: "RTL" },
 ];
+
+const LANGUAGES = ["English", "Spanish", "Arabic"];
+const COLORS = ["Blue", "Green", "Yellow", "Red"];
 
 export default function UtilityPage() {
   const [selectedUtilities, setSelectedUtilities] =
@@ -42,14 +52,19 @@ export default function UtilityPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [terablobLink, setTeraBlobLink] = useState<string | null>(null);
+  const [teraBlobPath, setTeraBlobPath] = useState<string>("");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(LANGUAGES[0]);
+  const [selectedColor, setSelectedColor] = useState<string>(COLORS[0]);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       teraBlobPath: "",
     },
   });
+
   const validateInputAndRunUtility = () => {
-    if (form.getValues("teraBlobPath") === "") {
+    if (teraBlobPath === "") {
       setErrorMessage("Please enter a path");
       return;
     }
@@ -59,17 +74,27 @@ export default function UtilityPage() {
     }
     runUtility();
   };
+
   const runUtility = async () => {
     setErrorMessage(null);
     setIsLoading(true);
     setTeraBlobLink(null);
-    const response: string | null = await apiClient.runUtility();
-    if (response) {
-      setTeraBlobLink(response);
+    try {
+      const result = await apiClient.runUtility(
+        teraBlobPath,
+        selectedUtilities.map((u) => u.name),
+        selectedLanguage,
+        selectedColor
+      );
+      if (result) {
+        setTeraBlobLink(result);
+      }
+    } catch (error) {
+      setErrorMessage("Failed to run utility");
     }
     setIsLoading(false);
-    console.log(response);
   };
+
   return (
     <>
       <Metadata
@@ -77,8 +102,8 @@ export default function UtilityPage() {
         seoDescription="Run localization scripts to perform various tasks"
       />
       <div className="h-full w-full flex items-center justify-start">
-        <div className="flex flex-1 items-center justify-center">
-          <div className="border border-primary py-4 w-[500] px-10 rounded-lg mt-8">
+        <div className="flex flex-1 flex-col items-center">
+          <div className="border border-primary py-4 w-[500] px-10 rounded-lg">
             <h1 className="text-2xl font-bold text-center">
               Localization Runner
             </h1>
@@ -129,6 +154,7 @@ export default function UtilityPage() {
                         {...field}
                         onChangeCapture={(targetValue) => {
                           field.onChange(targetValue.currentTarget.value);
+                          setTeraBlobPath(targetValue.currentTarget.value);
                         }}
                       />
                     </FormControl>
@@ -136,19 +162,65 @@ export default function UtilityPage() {
                   </FormItem>
                 )}
               />
-              <div className="mt-6" />
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => validateInputAndRunUtility()}
-                  disabled={isLoading || selectedUtilities.length === 0}
-                >
-                  {isLoading ? <BeatLoader color="#FFFFFF" /> : "Run"}
-                </Button>
-                {errorMessage && (
-                  <p className="text-red-500 text-sm">{errorMessage}</p>
-                )}
-              </div>
             </Form>
+            <div className="mt-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="space-y-2">
+                <Label>Language</Label>
+                <Select
+                  value={selectedLanguage}
+                  onValueChange={setSelectedLanguage}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((language) => (
+                      <SelectItem key={language} value={language}>
+                        {language}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Rectangle Color</Label>
+                <Select
+                  value={selectedColor}
+                  onValueChange={setSelectedColor}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select color" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COLORS.map((color) => (
+                      <SelectItem key={color} value={color}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: color }}
+                          />
+                          {color.charAt(0).toUpperCase() + color.slice(1)}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="mt-6" />
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={validateInputAndRunUtility}
+                disabled={isLoading || selectedUtilities.length === 0}
+              >
+                {isLoading ? <BeatLoader color="#FFFFFF" /> : "Run"}
+              </Button>
+              {errorMessage && (
+                <p className="text-red-500 text-sm">{errorMessage}</p>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex flex-1 flex-col items-center justify-center mt-10 mb-10 bg-gray-100 h-full w-full ">

@@ -187,7 +187,7 @@ class ApiClient {
         visible: boolean| null;
         xpath: string | null;
     } | undefined): Promise<RecordingTestCaseApiResponse | null> {
-        const endpoint = `http://localhost:8018/record/step/listen`;
+        const endpoint = `http://172.23.134.171:8018/record/step/listen`;
         console.log("STEP UUID (API CALL) :: ", stepUUID)
         let body: string
         if (action) {
@@ -302,11 +302,39 @@ class ApiClient {
         }
     }
 
-    async runUtility(): Promise<string|null> {
-        await new Promise<void>((resolve) => {
-            window.setTimeout(resolve, 2000);
-        });
-        return "http://localhost:7777/get_blob_file?file_name=/prod/personal/avaish12/localization_output.pdf";
+    async runUtility(
+        teraBlobPath: string,
+        selectedUtilities: string[],
+        language: string,
+        ractColor: string
+    ): Promise<string|null> {
+        try {
+            const response = await fetch('http://localhost:7777/localization-class', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({
+                    input_file: teraBlobPath,
+                    truncation_flag: selectedUtilities.includes('Truncation'),
+                    overlapping_flag: selectedUtilities.includes('Overlap'),
+                    rtl_flag: selectedUtilities.includes('RTL'),
+                    language: language,
+                    rectangle_color: ractColor
+                }),
+                signal: AbortSignal.timeout(5 * 60 * 1000)
+            });
+
+            if (!response.ok) {
+                return null;
+            }
+            return "http://localhost:7777/get_terablob_file?file_name=/prod/personal/avaish12/localization_output.pdf"
+        } catch (error) {
+            console.error('Error running utility:', error);
+            return null;
+        }
     }       
 }
 

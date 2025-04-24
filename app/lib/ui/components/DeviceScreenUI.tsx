@@ -43,7 +43,7 @@ export default function DeviceScreenUI({
   };
 
   const scaleCoordinate = (value: number, actualSize: number, displaySize: number) => {
-    return (value / actualSize) * displaySize;
+    return (value / actualSize) * (displaySize-16);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -105,8 +105,8 @@ export default function DeviceScreenUI({
           const bounds = parseBounds(menu.bounds);
           if (!bounds) return null;
 
-          const scaledX = scaleCoordinate(bounds.x, ACTUAL_WIDTH, DISPLAY_WIDTH);
-          const scaledY = scaleCoordinate(bounds.y, ACTUAL_HEIGHT, DISPLAY_HEIGHT);
+          const scaledX = scaleCoordinate(bounds.x, ACTUAL_WIDTH, DISPLAY_WIDTH)+8;
+          const scaledY = scaleCoordinate(bounds.y, ACTUAL_HEIGHT, DISPLAY_HEIGHT)+8;
           const scaledWidth = scaleCoordinate(bounds.width, ACTUAL_WIDTH, DISPLAY_WIDTH);
           const scaledHeight = scaleCoordinate(bounds.height, ACTUAL_HEIGHT, DISPLAY_HEIGHT);
 
