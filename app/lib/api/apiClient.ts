@@ -179,15 +179,19 @@ class ApiClient {
 
     async recording(uid: string, testCaseUUID: string, stepUUID: string | null, action?: {
         action_type: string | null;
-        param_value: string | null;
-        class: string | null;
-        name: string | null;
-        label: string | null;
-        enabled: boolean| null;
-        visible: boolean| null;
-        xpath: string | null;
+        param_value?: string | null;
+        assertion_type?: string | null;
+        assertion_value?: string | null;
+        class?: string | null;
+        name?: string | null;
+        label?: string | null;
+        enabled?: boolean | null;
+        visible?: boolean | null;
+        xpath?: string | null;
+        "resource-id"?: string | null;
+        "content-desc"?: string | null;
     } | undefined): Promise<RecordingTestCaseApiResponse | null> {
-        const endpoint = `http://172.23.134.171:8018/record/step/listen`;
+        const endpoint = `http://localhost:8018/record/step/listen`;
         console.log("STEP UUID (API CALL) :: ", stepUUID)
         let body: string
         if (action) {
@@ -198,7 +202,8 @@ class ApiClient {
             })
         } else {
             body = JSON.stringify({
-                token: `${testCaseUUID}`
+                token: `${testCaseUUID}`,
+                step_uuid: stepUUID
             })
         }
         console.log("Rrecording API call :: ", body)
@@ -210,9 +215,9 @@ class ApiClient {
                 },
                 body: body,
             });
-            console.log("Rrecording API RESPONSE :: ", response)
             if (response.ok) {
                 const responseData = await response.json()
+                console.log("Recording API Response :: ", responseData)
                 if (responseData.message != 'Timeout') {
                     const message = responseData.message;
                     const stepUUID = message.step_uuid;
@@ -222,10 +227,8 @@ class ApiClient {
                         if (menu.clickable) {
                             menuActions.push("Click");
                         }
-                        if (menu.scrollable) {
-                            menuActions.push("Scroll Up");
-                            menuActions.push("Scroll Bottom");
-                        }
+                        menuActions.push("Assert");
+                        menuActions.push("Scroll");
                         menuActions.push("Enter Text");
 
                         // Parse bounds to get x, y, width, height
@@ -277,8 +280,65 @@ class ApiClient {
                             return 0;
                         }
                     });
-                    const filteredMenuList = menuList.filter(menu => {
-                        return !menu.resourceId?.includes('com.android.systemui');
+
+                    const allMenuList: Menu[] = [];
+                    for (const menu of message.all_menu) {
+                        const menuActions: string[] = [];
+                        if (menu.clickable) {
+                            menuActions.push("Click");
+                        }
+                        menuActions.push("Assert");
+                        menuActions.push("Scroll");
+                        menuActions.push("Enter Text");
+
+                        // Parse bounds to get x, y, width, height
+                        const bounds = menu.bounds || "";
+                        const match = bounds.match(/\[(\d+),(\d+)\]\[(\d+),(\d+)\]/);
+                        let x = 0, y = 0, width = 0, height = 0;
+                        
+                        if (match) {
+                            const [_, x1, y1, x2, y2] = match;
+                            x = parseInt(x1);
+                            y = parseInt(y1);
+                            width = parseInt(x2) - parseInt(x1);
+                            height = parseInt(y2) - parseInt(y1);
+                        }
+
+                        allMenuList.push(
+                            new Menu(
+                                menu.type,
+                                menu.class,
+                                menu.name,
+                                menu.title,
+                                menu["resource-id"],
+                                menu.label,
+                                menu["content-desc"],
+                                menu.enabled,
+                                menu.visible,
+                                menu.accessible,
+                                x,
+                                y,
+                                width,
+                                height,
+                                menu.index,
+                                menu.clickable,
+                                menu.xpath,
+                                menuActions,
+                                bounds // Add bounds to the Menu object
+                            )
+                        );
+                    }
+                    allMenuList.sort((a, b) => {
+                        const aHasContentDesc = a.title?.trim() !== '';
+                        const bHasContentDesc = b.title?.trim() !== '';
+
+                        if (aHasContentDesc && !bHasContentDesc) {
+                            return -1;
+                        } else if (!aHasContentDesc && bHasContentDesc) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
                     });
                     return new RecordingTestCaseApiResponse(
                         responseData.client_id,
@@ -286,7 +346,8 @@ class ApiClient {
                         message.screenshot_url,
                         message.xml_url,
                         message.receiverMessage || '',
-                        filteredMenuList,
+                        menuList,
+                        allMenuList,
                         stepUUID,
                         message.screenshot_dimensions || { width: 1344, height: 2992 }
                     );

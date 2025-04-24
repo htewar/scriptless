@@ -6,6 +6,7 @@ export class RecordingTestCaseApiResponse {
         public xmlUrl: string,
         public receiverMessage: string,
         public menu: Menu[],
+        public allMenu: Menu[],
         public stepUUID: string,
         public screenshotDimensions: { width: number; height: number }
     ) {}

@@ -35,6 +35,7 @@ export default function RecordTestCase() {
   const [key, setKey] = useState(1);
   const refreshImage = () => setKey((prev) => prev + 1);
   const [stepUUID, setStepUUID] = useState<string>("");
+  const [isShowAllMenu, setIsShowAllMenu] = useState<boolean>(false);
 
   // Add useEffect to track stepUUID changes
   useEffect(() => {
@@ -48,14 +49,18 @@ export default function RecordTestCase() {
   const startRecording = useCallback(
     async (action?: {
       action_type: string | null;
-      param_value: string | null;
-      class: string | null;
-      name: string | null;
-      label: string | null;
-      enabled: boolean | null;
-      visible: boolean | null;
-      xpath: string | null;
-    },) => {
+      param_value?: string | null;
+      assertion_type?: string | null;
+      assertion_value?: string | null;
+      class?: string | null;
+      name?: string | null;
+      label?: string | null;
+      enabled?: boolean | null;
+      visible?: boolean | null;
+      xpath?: string | null;
+      "resource-id"?: string | null;
+      "content-desc"?: string | null;
+    }) => {
       setIsLoading(true);
       console.log("Current stepUUID in startRecording:", stepUUID);
       try {
@@ -101,6 +106,7 @@ export default function RecordTestCase() {
           if (recordingApiResponse instanceof RecordingTestCaseApiResponse) {
             const newStepUUID = recordingApiResponse.stepUUID;
             console.log("Setting new stepUUID:", newStepUUID);
+            console.log("Recording API Response :: ", recordingApiResponse);
             setStepUUID(newStepUUID);
             setTestCaseElement(recordingApiResponse);
             setScreenShotUrl(
@@ -161,21 +167,69 @@ export default function RecordTestCase() {
     action: string,
     input: string | null
   ) => {
-    const actionBody = {
-      action_type: action,
-      param_value: input || null,
-      class: menu.type || menu.classType,
-      name: menu.name ? menu.name : null,
-      text: menu.title ? menu.title : null,
-      "resource-id": menu.resourceId,
-      "content-desc": menu.contentDesc ? menu.contentDesc : null,
-      label: menu.label ? menu.label : null,
-      enabled: menu.enabled,
-      visible: menu.visible,
-      xpath: menu.xpath ? menu.xpath : null,
-    };
+    let actionBody;
+    if (action.startsWith('assert_value_')) {
+      actionBody = {
+        action_type: 'value_assertion',
+        assertion_type: action.replace('assert_value_', ''),
+        assertion_value: input,
+        param_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
+        class: menu.type || menu.classType,
+        name: menu.name ? menu.name : null,
+        label: menu.label ? menu.label : null,
+        enabled: menu.enabled,
+        visible: menu.visible,
+        xpath: menu.xpath ? menu.xpath : null,
+        "resource-id": menu.resourceId,
+        "content-desc": menu.contentDesc ? menu.contentDesc : null
+      };
+    } else if (action.startsWith('assert_regex_')) {
+      actionBody = {
+        action_type: 'regex_assertion',
+        assertion_type: action.replace('assert_regex_', ''),
+        assertion_value: input,
+        param_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
+        class: menu.type || menu.classType,
+        name: menu.name ? menu.name : null,
+        label: menu.label ? menu.label : null,
+        enabled: menu.enabled,
+        visible: menu.visible,
+        xpath: menu.xpath ? menu.xpath : null,
+        "resource-id": menu.resourceId,
+        "content-desc": menu.contentDesc ? menu.contentDesc : null
+      };
+    } else if (action === 'assert_visible') {
+      actionBody = {
+        action_type: 'visibility_assertion',
+        assertion_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
+        param_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
+        class: menu.type || menu.classType,
+        name: menu.name ? menu.name : null,
+        label: menu.label ? menu.label : null,
+        enabled: menu.enabled,
+        visible: menu.visible,
+        xpath: menu.xpath ? menu.xpath : null,
+        "resource-id": menu.resourceId,
+        "content-desc": menu.contentDesc ? menu.contentDesc : null
+      };
+    } else {
+      actionBody = {
+        action_type: action,
+        param_value: input || null,
+        class: menu.type || menu.classType,
+        name: menu.name ? menu.name : null,
+        "resource-id": menu.resourceId,
+        "content-desc": menu.contentDesc ? menu.contentDesc : null,
+        label: menu.label ? menu.label : null,
+        enabled: menu.enabled,
+        visible: menu.visible,
+        xpath: menu.xpath ? menu.xpath : null,
+      };
+    }
+
     refreshImage();
     setScreenShotUrl(null);
+    setIsShowAllMenu(false);
     const response = await startRecording(actionBody);
     if (response) {
       refreshImage();
@@ -185,6 +239,11 @@ export default function RecordTestCase() {
       setScreenShotUrl(`${response.screenshotUrl}?cache-bust=${key}`);
     }
   };
+
+  const showAllClick = async () => {
+    setIsShowAllMenu(prev => !prev);
+  };
+
   return (
     <>
       <Metadata
@@ -198,7 +257,7 @@ export default function RecordTestCase() {
             uniqekey={key}
             testCase={testCase}
             screenshotUrl={screenShotUrl}
-            menu={testCaseElement?.menu || []}
+            menu={isShowAllMenu ? testCaseElement?.allMenu || [] : testCaseElement?.menu || []}
             onPreviewTestCaseClick={previewTestCase}
             onRefreshClick={onRefreshClick}
             isRecordingLoading={isLoading}
@@ -210,14 +269,13 @@ export default function RecordTestCase() {
             ) => {
               let inputAction: string;
               if (action === "Click") inputAction = "click";
-              else if (action === "Scroll Up") inputAction = "scroll_up";
-              else if (action === "Scroll Bottom")
-                inputAction = "scroll_bottom";
               else inputAction = action;
               console.log("Menu Selected :: ", menu, action);
               recordStep(menu, inputAction, input).then(() => {});
             }}
             screenshotDimensions={testCaseElement?.screenshotDimensions || { width: 1344, height: 2992 }}
+            onShowAllClick={showAllClick}
+            isShowAllMenu={isShowAllMenu}
           />
         )}
       </div>
@@ -236,6 +294,8 @@ interface RecordingTestCaseScreenProp {
   onSaveTestCaseClick: () => void;
   onOptionSelect: (menu: Menu, action: string, input: string | null) => void;
   screenshotDimensions: { width: number; height: number };
+  onShowAllClick: () => void;
+  isShowAllMenu: boolean;
 }
 
 function RecordingTestCaseScreen({
@@ -249,6 +309,8 @@ function RecordingTestCaseScreen({
   onSaveTestCaseClick,
   onOptionSelect,
   screenshotDimensions,
+  onShowAllClick,
+  isShowAllMenu,
 }: RecordingTestCaseScreenProp) {
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
@@ -300,6 +362,13 @@ function RecordingTestCaseScreen({
                   <Button className="-mt-1" onClick={() => onRefreshClick()}>
                     <RefreshCw />
                     Refresh
+                  </Button>
+                  <Button 
+                    className="-mt-1" 
+                    onClick={() => onShowAllClick()}
+                    variant={isShowAllMenu ? "default" : "outline"}
+                  >
+                    {isShowAllMenu ? "Show Filtered" : "Show All"}
                   </Button>
                 </div>
                 {menu.length > 0 && (
