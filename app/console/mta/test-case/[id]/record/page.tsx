@@ -168,12 +168,19 @@ export default function RecordTestCase() {
     input: string | null
   ) => {
     let actionBody;
-    if (action.startsWith('assert_value_')) {
+    if (action.startsWith("assert_value_")) {
       actionBody = {
-        action_type: 'value_assertion',
-        assertion_type: action.replace('assert_value_', ''),
+        action_type: "value_assertion",
+        assertion_type: action.replace("assert_value_", ""),
         assertion_value: input,
-        param_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
+        param_value:
+          menu.label ||
+          menu.title ||
+          menu.contentDesc ||
+          menu.resourceId ||
+          menu.classType ||
+          menu.name ||
+          menu.type,
         class: menu.type || menu.classType,
         name: menu.name ? menu.name : null,
         label: menu.label ? menu.label : null,
@@ -181,14 +188,21 @@ export default function RecordTestCase() {
         visible: menu.visible,
         xpath: menu.xpath ? menu.xpath : null,
         "resource-id": menu.resourceId,
-        "content-desc": menu.contentDesc ? menu.contentDesc : null
+        "content-desc": menu.contentDesc ? menu.contentDesc : null,
       };
-    } else if (action.startsWith('assert_regex_')) {
+    } else if (action.startsWith("assert_regex_")) {
       actionBody = {
-        action_type: 'regex_assertion',
-        assertion_type: action.replace('assert_regex_', ''),
+        action_type: "regex_assertion",
+        assertion_type: action.replace("assert_regex_", ""),
         assertion_value: input,
-        param_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
+        param_value:
+          menu.label ||
+          menu.title ||
+          menu.contentDesc ||
+          menu.resourceId ||
+          menu.classType ||
+          menu.name ||
+          menu.type,
         class: menu.type || menu.classType,
         name: menu.name ? menu.name : null,
         label: menu.label ? menu.label : null,
@@ -196,13 +210,27 @@ export default function RecordTestCase() {
         visible: menu.visible,
         xpath: menu.xpath ? menu.xpath : null,
         "resource-id": menu.resourceId,
-        "content-desc": menu.contentDesc ? menu.contentDesc : null
+        "content-desc": menu.contentDesc ? menu.contentDesc : null,
       };
-    } else if (action === 'assert_visible') {
+    } else if (action === "assert_visible") {
       actionBody = {
-        action_type: 'visibility_assertion',
-        assertion_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
-        param_value: menu.label || menu.title || menu.contentDesc || menu.resourceId || menu.classType || menu.name || menu.type,
+        action_type: "visibility_assertion",
+        assertion_value:
+          menu.label ||
+          menu.title ||
+          menu.contentDesc ||
+          menu.resourceId ||
+          menu.classType ||
+          menu.name ||
+          menu.type,
+        param_value:
+          menu.label ||
+          menu.title ||
+          menu.contentDesc ||
+          menu.resourceId ||
+          menu.classType ||
+          menu.name ||
+          menu.type,
         class: menu.type || menu.classType,
         name: menu.name ? menu.name : null,
         label: menu.label ? menu.label : null,
@@ -210,7 +238,7 @@ export default function RecordTestCase() {
         visible: menu.visible,
         xpath: menu.xpath ? menu.xpath : null,
         "resource-id": menu.resourceId,
-        "content-desc": menu.contentDesc ? menu.contentDesc : null
+        "content-desc": menu.contentDesc ? menu.contentDesc : null,
       };
     } else {
       actionBody = {
@@ -241,7 +269,7 @@ export default function RecordTestCase() {
   };
 
   const showAllClick = async () => {
-    setIsShowAllMenu(prev => !prev);
+    setIsShowAllMenu((prev) => !prev);
   };
 
   return (
@@ -257,7 +285,11 @@ export default function RecordTestCase() {
             uniqekey={key}
             testCase={testCase}
             screenshotUrl={screenShotUrl}
-            menu={isShowAllMenu ? testCaseElement?.allMenu || [] : testCaseElement?.menu || []}
+            menu={
+              isShowAllMenu
+                ? testCaseElement?.allMenu || []
+                : testCaseElement?.menu || []
+            }
             onPreviewTestCaseClick={previewTestCase}
             onRefreshClick={onRefreshClick}
             isRecordingLoading={isLoading}
@@ -273,7 +305,12 @@ export default function RecordTestCase() {
               console.log("Menu Selected :: ", menu, action);
               recordStep(menu, inputAction, input).then(() => {});
             }}
-            screenshotDimensions={testCaseElement?.screenshotDimensions || { width: 1344, height: 2992 }}
+            screenshotDimensions={
+              testCaseElement?.screenshotDimensions || {
+                width: 1344,
+                height: 2992,
+              }
+            }
             onShowAllClick={showAllClick}
             isShowAllMenu={isShowAllMenu}
           />
@@ -363,8 +400,8 @@ function RecordingTestCaseScreen({
                     <RefreshCw />
                     Refresh
                   </Button>
-                  <Button 
-                    className="-mt-1" 
+                  <Button
+                    className="-mt-1"
                     onClick={() => onShowAllClick()}
                     variant={isShowAllMenu ? "default" : "outline"}
                   >

@@ -51,28 +51,38 @@ export default function DeviceScreenUI({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const hoveredIndex = menuList.findIndex((menu) => {
-      if (!menu.bounds) return false;
+    let smallestArea = Infinity;
+    let smallestMenu: Menu | null = null;
+    let smallestIndex = -1;
+
+    menuList.forEach((menu, index) => {
+      if (!menu.bounds) return;
       const bounds = parseBounds(menu.bounds);
-      if (!bounds) return false;
+      if (!bounds) return;
 
       const scaledX = scaleCoordinate(bounds.x, ACTUAL_WIDTH, DISPLAY_WIDTH);
       const scaledY = scaleCoordinate(bounds.y, ACTUAL_HEIGHT, DISPLAY_HEIGHT);
       const scaledWidth = scaleCoordinate(bounds.width, ACTUAL_WIDTH, DISPLAY_WIDTH);
       const scaledHeight = scaleCoordinate(bounds.height, ACTUAL_HEIGHT, DISPLAY_HEIGHT);
 
-      return (
+      if (
         x >= scaledX &&
         x <= scaledX + scaledWidth &&
         y >= scaledY &&
         y <= scaledY + scaledHeight
-      );
+      ) {
+        const area = scaledWidth * scaledHeight;
+        if (area < smallestArea) {
+          smallestArea = area;
+          smallestMenu = menu;
+          smallestIndex = index;
+        }
+      }
     });
 
-    if (hoveredIndex !== -1) {
-      const hovered = menuList[hoveredIndex];
-      setHoveredMenu(hovered);
-      onMenuHover(hovered, hoveredIndex);
+    if (smallestMenu) {
+      setHoveredMenu(smallestMenu);
+      onMenuHover(smallestMenu, smallestIndex);
     } else {
       setHoveredMenu(null);
       onMenuHover(null, -1);
@@ -128,28 +138,6 @@ export default function DeviceScreenUI({
           );
         })}
       </div>
-      {/* {selectedMenu && (
-        <div className="absolute top-0 right-0 bg-white p-2 rounded shadow-lg">
-          <div className="font-semibold">{selectedMenu.title || selectedMenu.label}</div>
-          <div className="text-sm text-gray-600">
-            {selectedMenu.type} - {selectedMenu.resourceId}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {selectedMenu.actions?.map((action, index) => (
-              <button
-                key={index}
-                className="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
-                onClick={() => {
-                  onMenuClick(selectedMenu, action);
-                  setSelectedMenu(null);
-                }}
-              >
-                {action}
-              </button>
-            ))}
-          </div>
-        </div>
-      )} */}
     </div>
   );
 } 
