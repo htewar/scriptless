@@ -60,6 +60,8 @@ export default function RecordTestCase() {
       xpath?: string | null;
       "resource-id"?: string | null;
       "content-desc"?: string | null;
+      title?: string | null;
+      text?: string | null;
     }) => {
       setIsLoading(true);
       console.log("Current stepUUID in startRecording:", stepUUID);
@@ -252,6 +254,8 @@ export default function RecordTestCase() {
         enabled: menu.enabled,
         visible: menu.visible,
         xpath: menu.xpath ? menu.xpath : null,
+        title: menu.title ? menu.title : null,
+        text: menu.text ? menu.text : null,
       };
     }
 

@@ -18,6 +18,7 @@ export class Menu {
         public classType: string,
         public name: string | null,
         public title: string | null,
+        public text: string | null,
         public resourceId: string | null,
         public label: string | null,
         public contentDesc: string | null,

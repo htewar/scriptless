@@ -98,7 +98,7 @@ export function ElementItemView(
                         onMouseLeave={() => onHover(-1)}
                     >
                         <p className="w-full break-words">
-                            {`${menu.label ? menu.label : menu.title ? menu.title : menu.contentDesc ? menu.contentDesc : menu.resourceId ? menu.resourceId : menu.classType ? menu.classType : menu.name ? menu.name : menu.type}`}
+                            {`${menu.label ? menu.label : menu.title ? menu.title : menu.text ? menu.text : menu.contentDesc ? menu.contentDesc : menu.resourceId ? menu.resourceId : menu.classType ? menu.classType : menu.name ? menu.name : menu.type}`}
                         </p>
                     </div>
                 </DropdownMenuTrigger>

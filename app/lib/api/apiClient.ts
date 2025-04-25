@@ -190,6 +190,8 @@ class ApiClient {
         xpath?: string | null;
         "resource-id"?: string | null;
         "content-desc"?: string | null;
+        title?: string | null;
+        text?: string | null;
     } | undefined): Promise<RecordingTestCaseApiResponse | null> {
         const endpoint = `http://localhost:8018/record/step/listen`;
         console.log("STEP UUID (API CALL) :: ", stepUUID)
@@ -250,6 +252,7 @@ class ApiClient {
                                 menu.class,
                                 menu.name,
                                 menu.title,
+                                menu.text,
                                 menu["resource-id"],
                                 menu.label,
                                 menu["content-desc"],
@@ -310,6 +313,7 @@ class ApiClient {
                                 menu.class,
                                 menu.name,
                                 menu.title,
+                                menu.text,
                                 menu["resource-id"],
                                 menu.label,
                                 menu["content-desc"],

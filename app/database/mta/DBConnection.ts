@@ -161,7 +161,7 @@ class DBConnection {
                     allowNull: false,
                 },
                 steps: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.TEXT,
                     allowNull: false,
                 },
             },
@@ -189,19 +189,19 @@ class DBConnection {
                 },
                 bounds: {
                     type: DataTypes.STRING,
-                    allowNull: false,
+                    allowNull: true,
                 },
-                img_screens: {
+                img_screenshot: {
                     type: DataTypes.STRING,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 xml_hierarchy: {
                     type: DataTypes.STRING,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 screen_id: {
                     type: DataTypes.STRING,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 order: {
                     type: DataTypes.INTEGER,
@@ -212,25 +212,39 @@ class DBConnection {
                     allowNull: false,
                 },
                 action: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
+                    type: DataTypes.TEXT,
+                    allowNull: true,
                 },
                 optionals: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.BOOLEAN,
                     allowNull: false,
+                    defaultValue: false,
                 },
                 screen_name: {
                     type: DataTypes.STRING,
-                    allowNull: false,
+                    allowNull: true,
                 },
                 order_id: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
                 },
+                created_at: {
+                    type: DataTypes.DATE,
+                    allowNull: false,
+                    defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+                },
+                updated_at: {
+                    type: DataTypes.DATE,
+                    allowNull: false,
+                    defaultValue: sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+                }
             },
             {
                 sequelize,
                 tableName: 'individual_step',
+                timestamps: true,
+                createdAt: 'created_at',
+                updatedAt: 'updated_at'
             }
         )
         TestCase.hasMany(IndividualStep, {foreignKey: 'test_case_uuid'});
