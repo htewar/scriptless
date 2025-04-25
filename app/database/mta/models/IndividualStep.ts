@@ -3,13 +3,13 @@ import { Model } from 'sequelize'
 class IndividualStep extends Model {
     declare steps_uuid: string;
     declare bounds: string;
-    declare img_screens: string;
+    declare img_screenshot: string;
     declare xml_hierarchy: string;
     declare screen_id: string;
     declare order: number;
     declare test_case_uuid: string;
     declare action: string;
-    declare optionals: string;
+    declare optionals: boolean;
     declare screen_name: string;
     declare order_id: number;
 }
